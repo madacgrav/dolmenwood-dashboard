@@ -40,6 +40,25 @@
   border-color: rgba(212, 175, 55, 0.5);
 }
 
+.btn-edit {
+  position: absolute;
+  right: 1rem;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, #d4af37 0%, #aa8929 100%);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.btn-edit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
 .character-sheet {
   background: rgba(255, 255, 255, 0.08);
   border: 2px solid rgba(212, 175, 55, 0.2);
@@ -106,6 +125,35 @@
   min-height: 80px;
 }
 
+/* Read-only styles */
+.form-group.readonly {
+  margin-bottom: 1rem;
+}
+
+.readonly-value {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 6px;
+  color: #f4f4f4;
+  font-size: 1rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.readonly-textarea {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 6px;
+  color: #f4f4f4;
+  font-size: 1rem;
+  min-height: 80px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 /* Ability Scores Grid */
 .abilities-grid {
   display: grid;
@@ -161,6 +209,29 @@
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 4px;
   color: #f4f4f4;
+}
+
+/* Read-only ability scores */
+.ability-readonly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ability-score {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #d4af37;
+}
+
+.ability-mod {
+  font-size: 1rem;
+  color: #f4f4f4;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 /* Save Targets */
@@ -299,14 +370,16 @@
     font-size: 1.5rem;
   }
   
-  .btn-back {
+  .btn-back,
+  .btn-edit {
     position: static;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     width: 100%;
   }
   
   .sheet-header {
     flex-direction: column;
+    gap: 0.5rem;
   }
   
   .form-actions {
