@@ -79,7 +79,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
         ...prev.abilityScores,
         [ability]: {
           ...prev.abilityScores[ability],
-          [field]: value === '' ? null : parseInt(value) || 0
+          [field]: value === '' ? 0 : (parseInt(value, 10) || 0)
         }
       }
     }));
@@ -90,7 +90,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
       ...prev,
       saveTargets: {
         ...prev.saveTargets,
-        [target]: value === '' ? null : parseInt(value) || null
+        [target]: value === '' ? null : parseInt(value, 10)
       }
     }));
   };

@@ -25,7 +25,7 @@ export const storage = {
     const characters = storage.getCharacters();
     const newCharacter = {
       ...character,
-      id: Date.now().toString()
+      id: crypto.randomUUID()
     };
     characters.push(newCharacter);
     storage.saveCharacters(characters);
