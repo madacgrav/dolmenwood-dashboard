@@ -150,9 +150,8 @@ export const storage = {
 
   // Update a character
   updateCharacter: async (id, updates) => {
-    const updatedCharacter = {
+    const updatedData = {
       ...updates,
-      id,
       updatedAt: new Date().toISOString()
     };
     
@@ -160,10 +159,11 @@ export const storage = {
       try {
         await setDoc(
           doc(db, `users/${userId}/${COLLECTION_NAME}`, id),
-          updatedCharacter,
+          updatedData,
           { merge: true }
         );
-        return updatedCharacter;
+        // Return the merged data
+        return { id, ...updatedData };
       } catch (error) {
         console.error('Error updating in Firestore:', error);
         // Fallback to localStorage
@@ -174,7 +174,7 @@ export const storage = {
     const characters = await storage.getCharacters();
     const index = characters.findIndex(char => char.id === id);
     if (index !== -1) {
-      characters[index] = { ...characters[index], ...updatedCharacter };
+      characters[index] = { ...characters[index], ...updatedData };
       await storage.saveCharacters(characters);
       return characters[index];
     }

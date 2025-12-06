@@ -36,7 +36,9 @@ export const initAuth = async () => {
     throw new Error('Firebase not initialized');
   }
   
-  if (authInitialized) return auth.currentUser;
+  if (authInitialized && auth.currentUser) {
+    return auth.currentUser;
+  }
   
   try {
     const userCredential = await signInAnonymously(auth);

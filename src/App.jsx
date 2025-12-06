@@ -23,19 +23,17 @@ function App() {
         if (firebaseReady) {
           setSyncStatus('Cloud sync enabled');
           
-          // Set up real-time listener for cloud sync
-          unsubscribe = storage.subscribeToCharacters((updatedCharacters) => {
-            setCharacters(updatedCharacters);
-            setLoading(false);
-          });
-          
-          // Initial load
+          // Initial load - check if we need example data
           const stored = await storage.getCharacters();
           if (stored.length === 0) {
             // If no characters, load examples
             await storage.saveCharacters(exampleCharacters);
-            setCharacters(exampleCharacters);
           }
+          
+          // Set up real-time listener for cloud sync (after initial load)
+          unsubscribe = storage.subscribeToCharacters((updatedCharacters) => {
+            setCharacters(updatedCharacters);
+          });
         } else {
           setSyncStatus('Offline mode');
           
