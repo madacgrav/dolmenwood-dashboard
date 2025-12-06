@@ -172,61 +172,57 @@ function CharacterSheet({ character, onSave, onCancel }) {
           
           <div className="form-row">
             {isEditing ? (
-              <div className="form-group">
-                <label>Kindred & Class:</label>
-                <input
-                  type="text"
-                  value={formData.kindredClass}
-                  onChange={(e) => handleChange('kindredClass', e.target.value)}
-                />
-              </div>
+              <>
+                <div className="form-group">
+                  <label>Kindred & Class:</label>
+                  <input
+                    type="text"
+                    value={formData.kindredClass}
+                    onChange={(e) => handleChange('kindredClass', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Background:</label>
+                  <input
+                    type="text"
+                    value={formData.background}
+                    onChange={(e) => handleChange('background', e.target.value)}
+                  />
+                </div>
+              </>
             ) : (
-              <ReadOnlyField label="Kindred & Class:" value={formData.kindredClass} />
+              <>
+                <ReadOnlyField label="Kindred & Class:" value={formData.kindredClass} />
+                <ReadOnlyField label="Background:" value={formData.background} />
+              </>
             )}
           </div>
 
           <div className="form-row">
             {isEditing ? (
-              <div className="form-group">
-                <label>Background:</label>
-                <input
-                  type="text"
-                  value={formData.background}
-                  onChange={(e) => handleChange('background', e.target.value)}
-                />
-              </div>
+              <>
+                <div className="form-group">
+                  <label>Alignment:</label>
+                  <input
+                    type="text"
+                    value={formData.alignment}
+                    onChange={(e) => handleChange('alignment', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Affiliation:</label>
+                  <input
+                    type="text"
+                    value={formData.affiliation}
+                    onChange={(e) => handleChange('affiliation', e.target.value)}
+                  />
+                </div>
+              </>
             ) : (
-              <ReadOnlyField label="Background:" value={formData.background} />
-            )}
-          </div>
-
-          <div className="form-row">
-            {isEditing ? (
-              <div className="form-group">
-                <label>Alignment:</label>
-                <input
-                  type="text"
-                  value={formData.alignment}
-                  onChange={(e) => handleChange('alignment', e.target.value)}
-                />
-              </div>
-            ) : (
-              <ReadOnlyField label="Alignment:" value={formData.alignment} />
-            )}
-          </div>
-
-          <div className="form-row">
-            {isEditing ? (
-              <div className="form-group">
-                <label>Affiliation:</label>
-                <input
-                  type="text"
-                  value={formData.affiliation}
-                  onChange={(e) => handleChange('affiliation', e.target.value)}
-                />
-              </div>
-            ) : (
-              <ReadOnlyField label="Affiliation:" value={formData.affiliation} />
+              <>
+                <ReadOnlyField label="Alignment:" value={formData.alignment} />
+                <ReadOnlyField label="Affiliation:" value={formData.affiliation} />
+              </>
             )}
           </div>
 
