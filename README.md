@@ -6,7 +6,8 @@ A mobile-optimized web application for managing character sheets for the Dolmenw
 
 - ✨ **Full CRUD Operations**: Create, read, update, and delete characters
 - 📱 **Mobile-First Design**: Optimized for smartphones and tablets
-- 💾 **Local Storage**: All data persists in browser localStorage (no backend required)
+- ☁️ **Cloud Sync** (Optional): Characters sync across all your devices in real-time via Firebase
+- 💾 **Offline Support**: Works without internet using localStorage fallback
 - 🎮 **4 Pre-loaded Characters**: Comes with example characters from the PDF
 - 🎨 **Beautiful UI**: Dark fantasy theme matching Dolmenwood aesthetics
 - 📋 **Complete Character Sheet**: All stats from the official character sheet including:
@@ -18,6 +19,17 @@ A mobile-optimized web application for managing character sheets for the Dolmenw
   - Experience & Level tracking
   - Kindred & Class Traits
   - Notes section
+
+## Cloud Sync Setup (Optional)
+
+To enable cross-device synchronization:
+
+1. See **[FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** for detailed setup instructions
+2. Create a free Firebase project
+3. Configure environment variables
+4. Characters will automatically sync across all your devices!
+
+**Without Firebase:** App works perfectly fine using localStorage (data stays on your device only)
 
 ## Quick Start
 

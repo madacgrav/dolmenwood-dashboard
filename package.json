@@ -8,11 +8,16 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": ["dolmenwood", "rpg", "character-sheet"],
+  "keywords": [
+    "dolmenwood",
+    "rpg",
+    "character-sheet"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.1",
+    "firebase": "^12.6.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "vite": "^7.2.6"
