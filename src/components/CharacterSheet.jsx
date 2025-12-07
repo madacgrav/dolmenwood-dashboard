@@ -276,7 +276,7 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
         date: new Date().toISOString(),
         sessionNumber: newDiaryEntry.sessionNumber ? parseInt(newDiaryEntry.sessionNumber, 10) : null,
         content: newDiaryEntry.content.trim(),
-        authorId: character?.id || 'new',
+        authorId: character?.id || formData.id || crypto.randomUUID(),
         authorName: formData.name || 'Unknown'
       };
       

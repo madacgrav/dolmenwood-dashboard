@@ -25,7 +25,9 @@ function PartyView({ partyName, allCharacters, currentUser, onBack, onSelectChar
         }
       });
 
-      // Sort by date (newest first) - ISO strings can be compared directly
+      // Sort by date (newest first)
+      // Using localeCompare on ISO 8601 strings (from toISOString()) 
+      // which are lexicographically sortable
       allDiaryEntries.sort((a, b) => b.date.localeCompare(a.date));
       setPartyDiary(allDiaryEntries);
     }
