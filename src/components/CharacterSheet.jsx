@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import html2pdf from 'html2pdf.js';
 import './CharacterSheet.css';
 
 // Avatar configuration constants
@@ -78,6 +79,7 @@ const ReadOnlyField = ({ label, value }) => (
 function CharacterSheet({ character, onSave, onCancel }) {
   const [formData, setFormData] = useState(character || emptyCharacter);
   const [isEditing, setIsEditing] = useState(!character); // Edit mode if creating new character
+  const sheetRef = useRef(null); // Reference for PDF export
 
   useEffect(() => {
     setFormData(character || emptyCharacter);
@@ -342,14 +344,66 @@ function CharacterSheet({ character, onSave, onCancel }) {
     }));
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportPDF = async () => {
+    if (!sheetRef.current) return;
+
+    const element = sheetRef.current;
+    const characterName = formData.name || 'Character';
+    
+    const opt = {
+      margin: [0.5, 0.5, 0.5, 0.5],
+      filename: `${characterName.replace(/[^a-z0-9]/gi, '_')}_CharacterSheet.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#1a1a2e'
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'letter', 
+        orientation: 'portrait' 
+      }
+    };
+
+    try {
+      // Temporarily hide buttons for PDF
+      const buttons = element.querySelectorAll('.btn-back, .btn-edit, .btn-save, .btn-cancel, .btn-print, .btn-pdf');
+      buttons.forEach(btn => btn.style.display = 'none');
+      
+      await html2pdf().set(opt).from(element).save();
+      
+      // Restore buttons
+      buttons.forEach(btn => btn.style.display = '');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
+  };
+
   return (
-    <div className="character-sheet-container">
+    <div className="character-sheet-container" ref={sheetRef}>
       <div className="sheet-header">
         <button className="btn-back" onClick={onCancel}>← Back to List</button>
         <h1>Dolmenwood</h1>
-        {!isEditing && character && (
-          <button className="btn-edit" onClick={handleEdit}>✎ Edit</button>
-        )}
+        <div className="header-buttons">
+          {!isEditing && character && (
+            <>
+              <button className="btn-print" onClick={handlePrint} title="Print Character Sheet">
+                🖨️ Print
+              </button>
+              <button className="btn-pdf" onClick={handleExportPDF} title="Export to PDF">
+                📄 PDF
+              </button>
+              <button className="btn-edit" onClick={handleEdit}>✎ Edit</button>
+            </>
+          )}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="character-sheet">
