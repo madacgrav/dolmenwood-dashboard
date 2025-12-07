@@ -175,7 +175,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
       if (category === 'tinyItems') {
         newInventory.tinyItems = [...newInventory.tinyItems, ''];
       } else {
-        newInventory[category] = [...newInventory[category], { item: '', weight: null }];
+        newInventory[category] = [...newInventory[category], { item: '', weight: null, description: '' }];
       }
       return {
         ...prev,
@@ -710,6 +710,13 @@ function CharacterSheet({ character, onSave, onCancel }) {
                       placeholder="Weight"
                       className="inventory-weight-input"
                     />
+                    <input
+                      type="text"
+                      value={item.description || ''}
+                      onChange={(e) => handleInventoryChange('equippedItems', index, 'description', e.target.value)}
+                      placeholder="Description"
+                      className="inventory-input"
+                    />
                     <button
                       type="button"
                       className="btn-remove-item"
@@ -731,6 +738,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
                     <div key={index} className="readonly-inventory-item">
                       <span className="item-name">{item.item}</span>
                       {item.weight && <span className="item-weight">(Weight: {item.weight})</span>}
+                      {item.description && <span className="item-description"> - {item.description}</span>}
                     </div>
                   ))
                 ) : (
@@ -761,6 +769,13 @@ function CharacterSheet({ character, onSave, onCancel }) {
                       placeholder="Weight"
                       className="inventory-weight-input"
                     />
+                    <input
+                      type="text"
+                      value={item.description || ''}
+                      onChange={(e) => handleInventoryChange('stowedItems', index, 'description', e.target.value)}
+                      placeholder="Description"
+                      className="inventory-input"
+                    />
                     <button
                       type="button"
                       className="btn-remove-item"
@@ -782,6 +797,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
                     <div key={index} className="readonly-inventory-item">
                       <span className="item-name">{item.item}</span>
                       {item.weight && <span className="item-weight">(Weight: {item.weight})</span>}
+                      {item.description && <span className="item-description"> - {item.description}</span>}
                     </div>
                   ))
                 ) : (
