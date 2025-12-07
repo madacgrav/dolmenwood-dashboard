@@ -576,3 +576,259 @@
     width: 100%;
   }
 }
+
+/* Dynamic Skills */
+.skill-item {
+  position: relative;
+}
+
+.skill-input-wrapper {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skill-input-wrapper input {
+  flex: 1;
+}
+
+.btn-remove-skill {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+}
+
+.btn-remove-skill:hover {
+  background: rgba(255, 0, 0, 0.5);
+  border-color: rgba(255, 0, 0, 0.7);
+}
+
+.btn-add-skill {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
+  color: #d4af37;
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: bold;
+  width: 100%;
+}
+
+.btn-add-skill:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.5) 0%, rgba(170, 137, 41, 0.5) 100%);
+  border-color: #d4af37;
+}
+
+/* Inventory Section */
+.inventory-subsection {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.15) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+}
+
+.inventory-subsection h3 {
+  color: #d4af37;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-family: Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.inventory-item-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-end;
+}
+
+.inventory-input {
+  flex: 2;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.15) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  border-radius: 6px;
+  color: #f4f4f4;
+  font-size: 0.95rem;
+}
+
+.inventory-weight-input {
+  flex: 1;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.15) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  border-radius: 6px;
+  color: #f4f4f4;
+  font-size: 0.95rem;
+}
+
+.inventory-input:focus,
+.inventory-weight-input:focus {
+  outline: none;
+  border-color: #d4af37;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.25) 0%, rgba(101, 67, 33, 0.25) 100%);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.btn-remove-item {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-remove-item:hover {
+  background: rgba(255, 0, 0, 0.5);
+  border-color: rgba(255, 0, 0, 0.7);
+}
+
+.btn-add-item {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
+  color: #d4af37;
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  font-weight: bold;
+  width: 100%;
+}
+
+.btn-add-item:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.5) 0%, rgba(170, 137, 41, 0.5) 100%);
+  border-color: #d4af37;
+}
+
+.readonly-list {
+  padding: 0.5rem;
+}
+
+.readonly-list-item {
+  padding: 0.5rem;
+  color: #f4f4f4;
+  font-size: 0.95rem;
+}
+
+.readonly-inventory {
+  padding: 0.5rem;
+}
+
+.readonly-inventory-item {
+  padding: 0.5rem;
+  color: #f4f4f4;
+  font-size: 0.95rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.item-name {
+  font-weight: bold;
+}
+
+.item-weight {
+  color: #d4af37;
+  font-size: 0.85rem;
+}
+
+.inventory-total {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
+  border: 2px solid #d4af37;
+  border-radius: 8px;
+  text-align: center;
+  color: #d4af37;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Coins Section */
+.coins-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .coins-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.coins-grid .form-group {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.2) 0%, rgba(101, 67, 33, 0.2) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.coins-grid .form-group label {
+  font-size: 0.85rem;
+  text-align: center;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.coins-grid .form-group input,
+.coins-grid .readonly-value {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.coins-total {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(170, 137, 41, 0.2) 100%);
+  border: 2px solid #d4af37;
+  border-radius: 8px;
+  text-align: center;
+  color: #d4af37;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.conversion-hint {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: normal;
+  text-shadow: none;
+  font-style: italic;
+}

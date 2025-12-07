@@ -115,6 +115,133 @@ function CharacterSheet({ character, onSave, onCancel }) {
     }));
   };
 
+  const handleAddSkill = () => {
+    const skillName = prompt('Enter new skill name:');
+    if (skillName && skillName.trim()) {
+      const key = skillName.toLowerCase().replace(/\s+/g, '_');
+      setFormData(prev => ({
+        ...prev,
+        skillTargets: {
+          ...prev.skillTargets,
+          [key]: null
+        }
+      }));
+    }
+  };
+
+  const handleRemoveSkill = (skill) => {
+    // Don't allow removing default skills
+    if (['listen', 'search', 'survival'].includes(skill)) {
+      return;
+    }
+    setFormData(prev => {
+      const newSkillTargets = { ...prev.skillTargets };
+      delete newSkillTargets[skill];
+      return {
+        ...prev,
+        skillTargets: newSkillTargets
+      };
+    });
+  };
+
+  const handleInventoryChange = (category, index, field, value) => {
+    setFormData(prev => {
+      const newInventory = { ...prev.inventory };
+      if (category === 'tinyItems') {
+        const newTinyItems = [...newInventory.tinyItems];
+        newTinyItems[index] = value;
+        newInventory.tinyItems = newTinyItems;
+      } else {
+        const newItems = [...newInventory[category]];
+        newItems[index] = {
+          ...newItems[index],
+          [field]: value
+        };
+        newInventory[category] = newItems;
+      }
+      return {
+        ...prev,
+        inventory: newInventory
+      };
+    });
+  };
+
+  const handleAddInventoryItem = (category) => {
+    setFormData(prev => {
+      const newInventory = { ...prev.inventory };
+      if (category === 'tinyItems') {
+        newInventory.tinyItems = [...newInventory.tinyItems, ''];
+      } else {
+        newInventory[category] = [...newInventory[category], { item: '', weight: null }];
+      }
+      return {
+        ...prev,
+        inventory: newInventory
+      };
+    });
+  };
+
+  const handleRemoveInventoryItem = (category, index) => {
+    setFormData(prev => {
+      const newInventory = { ...prev.inventory };
+      if (category === 'tinyItems') {
+        newInventory.tinyItems = newInventory.tinyItems.filter((_, i) => i !== index);
+      } else {
+        newInventory[category] = newInventory[category].filter((_, i) => i !== index);
+      }
+      return {
+        ...prev,
+        inventory: newInventory
+      };
+    });
+  };
+
+  const handleCoinsChange = (coin, value) => {
+    setFormData(prev => ({
+      ...prev,
+      coins: {
+        ...prev.coins,
+        [coin]: value === '' ? null : parseInt(value, 10)
+      }
+    }));
+  };
+
+  const calculateTotalWeight = () => {
+    const equippedWeight = formData.inventory.equippedItems.reduce((sum, item) => {
+      const weight = parseFloat(item.weight);
+      return sum + (isNaN(weight) ? 0 : weight);
+    }, 0);
+    const stowedWeight = formData.inventory.stowedItems.reduce((sum, item) => {
+      const weight = parseFloat(item.weight);
+      return sum + (isNaN(weight) ? 0 : weight);
+    }, 0);
+    return equippedWeight + stowedWeight;
+  };
+
+  const calculateTotalMoney = () => {
+    const copper = formData.coins.copper || 0;
+    const silver = formData.coins.silver || 0;
+    const gold = formData.coins.gold || 0;
+    const pellucidum = formData.coins.pellucidum || 0;
+    
+    // Convert everything to copper
+    const totalInCopper = copper + (silver * 10) + (gold * 100) + (pellucidum * 1000);
+    
+    // Convert back to highest denominations
+    const p = Math.floor(totalInCopper / 1000);
+    const g = Math.floor((totalInCopper % 1000) / 100);
+    const s = Math.floor((totalInCopper % 100) / 10);
+    const c = totalInCopper % 10;
+    
+    const parts = [];
+    if (p > 0) parts.push(`${p}p`);
+    if (g > 0) parts.push(`${g}g`);
+    if (s > 0) parts.push(`${s}s`);
+    if (c > 0) parts.push(`${c}c`);
+    
+    return parts.length > 0 ? parts.join(' ') : '0c';
+  };
+
   const handleLanguagesChange = (value) => {
     const langs = value.split(',').map(l => l.trim()).filter(l => l);
     setFormData(prev => ({
@@ -373,41 +500,44 @@ function CharacterSheet({ character, onSave, onCancel }) {
         <div className="section">
           <h2>Skill Targets</h2>
           <div className="skills-grid">
-            {isEditing ? (
-              <>
-                <div className="form-group">
-                  <label>Listen</label>
-                  <input
-                    type="text"
-                    value={formData.skillTargets.listen || ''}
-                    onChange={(e) => handleSkillChange('listen', e.target.value)}
+            {Object.entries(formData.skillTargets).map(([skill, value]) => (
+              <div key={skill} className="form-group skill-item">
+                {isEditing ? (
+                  <>
+                    <label>{skill.charAt(0).toUpperCase() + skill.slice(1).replace(/_/g, ' ')}</label>
+                    <div className="skill-input-wrapper">
+                      <input
+                        type="text"
+                        value={value || ''}
+                        onChange={(e) => handleSkillChange(skill, e.target.value)}
+                      />
+                      {!['listen', 'search', 'survival'].includes(skill) && (
+                        <button
+                          type="button"
+                          className="btn-remove-skill"
+                          onClick={() => handleRemoveSkill(skill)}
+                          title="Remove skill"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <ReadOnlyField 
+                    label={skill.charAt(0).toUpperCase() + skill.slice(1).replace(/_/g, ' ')} 
+                    value={value} 
                   />
-                </div>
-                <div className="form-group">
-                  <label>Search</label>
-                  <input
-                    type="text"
-                    value={formData.skillTargets.search || ''}
-                    onChange={(e) => handleSkillChange('search', e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Survival</label>
-                  <input
-                    type="text"
-                    value={formData.skillTargets.survival || ''}
-                    onChange={(e) => handleSkillChange('survival', e.target.value)}
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                <ReadOnlyField label="Listen" value={formData.skillTargets.listen} />
-                <ReadOnlyField label="Search" value={formData.skillTargets.search} />
-                <ReadOnlyField label="Survival" value={formData.skillTargets.survival} />
-              </>
-            )}
+                )}
+              </div>
+            ))}
           </div>
+
+          {isEditing && (
+            <button type="button" className="btn-add-skill" onClick={handleAddSkill}>
+              + Add Skill
+            </button>
+          )}
 
           {isEditing ? (
             <div className="form-group">
@@ -471,6 +601,219 @@ function CharacterSheet({ character, onSave, onCancel }) {
                 <ReadOnlyField label="Modifier" value={formData.modifier} />
               </>
             )}
+          </div>
+        </div>
+
+        {/* Inventory */}
+        <div className="section">
+          <h2>Inventory</h2>
+          
+          {/* Tiny Items */}
+          <div className="inventory-subsection">
+            <h3>Tiny Items</h3>
+            {isEditing ? (
+              <>
+                {formData.inventory.tinyItems.map((item, index) => (
+                  <div key={index} className="inventory-item-row">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) => handleInventoryChange('tinyItems', index, null, e.target.value)}
+                      placeholder="Item name"
+                      className="inventory-input"
+                    />
+                    <button
+                      type="button"
+                      className="btn-remove-item"
+                      onClick={() => handleRemoveInventoryItem('tinyItems', index)}
+                      title="Remove item"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="btn-add-item" onClick={() => handleAddInventoryItem('tinyItems')}>
+                  + Add Tiny Item
+                </button>
+              </>
+            ) : (
+              <div className="readonly-list">
+                {formData.inventory.tinyItems.length > 0 ? (
+                  formData.inventory.tinyItems.map((item, index) => (
+                    <div key={index} className="readonly-list-item">• {item}</div>
+                  ))
+                ) : (
+                  <div className="readonly-value">—</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Equipped Items */}
+          <div className="inventory-subsection">
+            <h3>Equipped Items</h3>
+            {isEditing ? (
+              <>
+                {formData.inventory.equippedItems.map((item, index) => (
+                  <div key={index} className="inventory-item-row">
+                    <input
+                      type="text"
+                      value={item.item}
+                      onChange={(e) => handleInventoryChange('equippedItems', index, 'item', e.target.value)}
+                      placeholder="Item name"
+                      className="inventory-input"
+                    />
+                    <input
+                      type="text"
+                      value={item.weight || ''}
+                      onChange={(e) => handleInventoryChange('equippedItems', index, 'weight', e.target.value)}
+                      placeholder="Weight"
+                      className="inventory-weight-input"
+                    />
+                    <button
+                      type="button"
+                      className="btn-remove-item"
+                      onClick={() => handleRemoveInventoryItem('equippedItems', index)}
+                      title="Remove item"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="btn-add-item" onClick={() => handleAddInventoryItem('equippedItems')}>
+                  + Add Equipped Item
+                </button>
+              </>
+            ) : (
+              <div className="readonly-inventory">
+                {formData.inventory.equippedItems.length > 0 ? (
+                  formData.inventory.equippedItems.map((item, index) => (
+                    <div key={index} className="readonly-inventory-item">
+                      <span className="item-name">{item.item}</span>
+                      {item.weight && <span className="item-weight">(Weight: {item.weight})</span>}
+                    </div>
+                  ))
+                ) : (
+                  <div className="readonly-value">—</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Stowed Items */}
+          <div className="inventory-subsection">
+            <h3>Stowed Items</h3>
+            {isEditing ? (
+              <>
+                {formData.inventory.stowedItems.map((item, index) => (
+                  <div key={index} className="inventory-item-row">
+                    <input
+                      type="text"
+                      value={item.item}
+                      onChange={(e) => handleInventoryChange('stowedItems', index, 'item', e.target.value)}
+                      placeholder="Item name"
+                      className="inventory-input"
+                    />
+                    <input
+                      type="text"
+                      value={item.weight || ''}
+                      onChange={(e) => handleInventoryChange('stowedItems', index, 'weight', e.target.value)}
+                      placeholder="Weight"
+                      className="inventory-weight-input"
+                    />
+                    <button
+                      type="button"
+                      className="btn-remove-item"
+                      onClick={() => handleRemoveInventoryItem('stowedItems', index)}
+                      title="Remove item"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="btn-add-item" onClick={() => handleAddInventoryItem('stowedItems')}>
+                  + Add Stowed Item
+                </button>
+              </>
+            ) : (
+              <div className="readonly-inventory">
+                {formData.inventory.stowedItems.length > 0 ? (
+                  formData.inventory.stowedItems.map((item, index) => (
+                    <div key={index} className="readonly-inventory-item">
+                      <span className="item-name">{item.item}</span>
+                      {item.weight && <span className="item-weight">(Weight: {item.weight})</span>}
+                    </div>
+                  ))
+                ) : (
+                  <div className="readonly-value">—</div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Total Weight */}
+          <div className="inventory-total">
+            <strong>Total Weight:</strong> {calculateTotalWeight()}
+          </div>
+        </div>
+
+        {/* Coins */}
+        <div className="section">
+          <h2>Coins</h2>
+          <div className="coins-grid">
+            {isEditing ? (
+              <>
+                <div className="form-group">
+                  <label>Copper</label>
+                  <input
+                    type="number"
+                    value={formData.coins.copper || ''}
+                    onChange={(e) => handleCoinsChange('copper', e.target.value)}
+                    min="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Silver</label>
+                  <input
+                    type="number"
+                    value={formData.coins.silver || ''}
+                    onChange={(e) => handleCoinsChange('silver', e.target.value)}
+                    min="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Gold</label>
+                  <input
+                    type="number"
+                    value={formData.coins.gold || ''}
+                    onChange={(e) => handleCoinsChange('gold', e.target.value)}
+                    min="0"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Pellucidium</label>
+                  <input
+                    type="number"
+                    value={formData.coins.pellucidum || ''}
+                    onChange={(e) => handleCoinsChange('pellucidum', e.target.value)}
+                    min="0"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <ReadOnlyField label="Copper" value={formData.coins.copper || 0} />
+                <ReadOnlyField label="Silver" value={formData.coins.silver || 0} />
+                <ReadOnlyField label="Gold" value={formData.coins.gold || 0} />
+                <ReadOnlyField label="Pellucidium" value={formData.coins.pellucidum || 0} />
+              </>
+            )}
+          </div>
+          <div className="coins-total">
+            <strong>Total Money:</strong> {calculateTotalMoney()}
+            <div className="conversion-hint">
+              (10 copper = 1 silver, 10 silver = 1 gold, 10 gold = 1 pellucidium)
+            </div>
           </div>
         </div>
 
