@@ -82,6 +82,8 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
   const [formData, setFormData] = useState(character || emptyCharacter);
   const [isEditing, setIsEditing] = useState(!character); // Edit mode if creating new character
   const sheetRef = useRef(null); // Reference for PDF export
+  const [showDiaryForm, setShowDiaryForm] = useState(false);
+  const [newDiaryEntry, setNewDiaryEntry] = useState({ sessionNumber: '', content: '' });
 
   useEffect(() => {
     setFormData(character || emptyCharacter);
@@ -264,24 +266,34 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
   };
 
   const handleAddDiaryEntry = () => {
-    const sessionNumber = prompt('Enter session number:');
-    const content = prompt('Enter diary entry:');
-    
-    if (content && content.trim()) {
-      const newEntry = {
+    setShowDiaryForm(true);
+  };
+
+  const handleSaveDiaryEntry = () => {
+    if (newDiaryEntry.content.trim()) {
+      const entry = {
         id: crypto.randomUUID(),
         date: new Date().toISOString(),
-        sessionNumber: sessionNumber ? parseInt(sessionNumber, 10) : null,
-        content: content.trim(),
+        sessionNumber: newDiaryEntry.sessionNumber ? parseInt(newDiaryEntry.sessionNumber, 10) : null,
+        content: newDiaryEntry.content.trim(),
         authorId: character?.id || 'new',
         authorName: formData.name || 'Unknown'
       };
       
       setFormData(prev => ({
         ...prev,
-        diaryEntries: [...(prev.diaryEntries || []), newEntry]
+        diaryEntries: [...(prev.diaryEntries || []), entry]
       }));
+      
+      // Reset form
+      setNewDiaryEntry({ sessionNumber: '', content: '' });
+      setShowDiaryForm(false);
     }
+  };
+
+  const handleCancelDiaryEntry = () => {
+    setNewDiaryEntry({ sessionNumber: '', content: '' });
+    setShowDiaryForm(false);
   };
 
   const handleRemoveDiaryEntry = (entryId) => {
@@ -1131,7 +1143,40 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
           ) : (
             <div className="readonly-value">No diary entries yet.</div>
           )}
-          {!isEditing && (
+          
+          {showDiaryForm && !isEditing && (
+            <div className="diary-form">
+              <div className="form-group">
+                <label>Session Number (optional):</label>
+                <input
+                  type="number"
+                  value={newDiaryEntry.sessionNumber}
+                  onChange={(e) => setNewDiaryEntry(prev => ({ ...prev, sessionNumber: e.target.value }))}
+                  placeholder="e.g., 1"
+                />
+              </div>
+              <div className="form-group">
+                <label>Diary Entry:</label>
+                <textarea
+                  value={newDiaryEntry.content}
+                  onChange={(e) => setNewDiaryEntry(prev => ({ ...prev, content: e.target.value }))}
+                  rows="4"
+                  placeholder="What happened in this session..."
+                  autoFocus
+                />
+              </div>
+              <div className="diary-form-actions">
+                <button type="button" className="btn-cancel" onClick={handleCancelDiaryEntry}>
+                  Cancel
+                </button>
+                <button type="button" className="btn-save" onClick={handleSaveDiaryEntry}>
+                  Save Entry
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {!isEditing && !showDiaryForm && (
             <button type="button" className="btn-add-diary" onClick={handleAddDiaryEntry}>
               + Add Diary Entry
             </button>

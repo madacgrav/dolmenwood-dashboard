@@ -25,8 +25,8 @@ function PartyView({ partyName, allCharacters, currentUser, onBack, onSelectChar
         }
       });
 
-      // Sort by date (newest first)
-      allDiaryEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+      // Sort by date (newest first) - ISO strings can be compared directly
+      allDiaryEntries.sort((a, b) => b.date.localeCompare(a.date));
       setPartyDiary(allDiaryEntries);
     }
   }, [partyName, allCharacters]);
