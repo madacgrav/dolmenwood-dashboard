@@ -201,7 +201,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
       ...prev,
       coins: {
         ...prev.coins,
-        [coin]: value === '' ? null : parseInt(value, 10)
+        [coin]: value === '' ? null : (parseInt(value, 10) || 0)
       }
     }));
   };
