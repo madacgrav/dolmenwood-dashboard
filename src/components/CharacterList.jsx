@@ -17,6 +17,11 @@ function CharacterList({ characters, onSelectCharacter, onCreateNew, onDelete })
         {characters.map((character) => (
           <div key={character.id} className="character-card">
             <div className="card-content" onClick={() => onSelectCharacter(character)}>
+              {character.avatar && (
+                <div className="card-avatar-container">
+                  <img src={character.avatar} alt={character.name} className="card-avatar" />
+                </div>
+              )}
               <h2>{character.name}</h2>
               <p className="kindred-class">{character.kindredClass}</p>
               <div className="character-stats">

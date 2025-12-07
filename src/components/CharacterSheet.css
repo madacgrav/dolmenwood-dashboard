@@ -143,6 +143,103 @@
   border-bottom: none;
 }
 
+/* Avatar Section */
+.avatar-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.character-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #d4af37;
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.btn-remove-avatar {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e74c3c;
+  color: white;
+  border: 2px solid #c0392b;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-remove-avatar:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+
+.avatar-upload {
+  width: 150px;
+  height: 150px;
+}
+
+.avatar-upload-label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px dashed rgba(212, 175, 55, 0.5);
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.15) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-placeholder:hover {
+  border-color: #d4af37;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.25) 0%, rgba(101, 67, 33, 0.25) 100%);
+  transform: scale(1.05);
+}
+
+.avatar-placeholder span:first-child {
+  font-size: 3rem;
+  color: #d4af37;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.upload-text {
+  color: #d4af37;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: Georgia, serif;
+}
+
 .section h2 {
   color: #d4af37;
   font-size: 1.5rem;

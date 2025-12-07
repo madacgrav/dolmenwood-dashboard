@@ -3,6 +3,7 @@ import './CharacterSheet.css';
 
 const emptyCharacter = {
   name: '',
+  avatar: '', // Base64 encoded image
   age: '',
   height: '',
   weight: '',
@@ -271,6 +272,72 @@ function CharacterSheet({ character, onSave, onCancel }) {
     }
   };
 
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image size should be less than 2MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Create canvas to resize image
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 150; // Maximum width/height for avatar
+        
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions maintaining aspect ratio
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height = (height * MAX_SIZE) / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width = (width * MAX_SIZE) / height;
+            height = MAX_SIZE;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to base64 with reduced quality to keep size small
+        const resizedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        
+        setFormData(prev => ({
+          ...prev,
+          avatar: resizedBase64
+        }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    setFormData(prev => ({
+      ...prev,
+      avatar: ''
+    }));
+  };
+
   return (
     <div className="character-sheet-container">
       <div className="sheet-header">
@@ -284,6 +351,43 @@ function CharacterSheet({ character, onSave, onCancel }) {
       <form onSubmit={handleSubmit} className="character-sheet">
         {/* Basic Information */}
         <div className="section basic-info">
+          {/* Avatar Section */}
+          <div className="avatar-section">
+            {formData.avatar ? (
+              <div className="avatar-container">
+                <img src={formData.avatar} alt="Character avatar" className="character-avatar" />
+                {isEditing && (
+                  <button 
+                    type="button" 
+                    className="btn-remove-avatar" 
+                    onClick={handleRemoveAvatar}
+                    title="Remove avatar"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ) : (
+              isEditing && (
+                <div className="avatar-upload">
+                  <label htmlFor="avatar-upload" className="avatar-upload-label">
+                    <div className="avatar-placeholder">
+                      <span>+</span>
+                      <span className="upload-text">Add Avatar</span>
+                    </div>
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              )
+            )}
+          </div>
+
           <div className="form-row">
             {isEditing ? (
               <div className="form-group">
