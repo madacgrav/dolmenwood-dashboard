@@ -1,0 +1,59 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bladeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c0c0c0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e8e8e8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a8a8a8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="hiltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b6914;stop-opacity:1" />
+    </linearGradient>
+    <filter id="swordGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <g filter="url(#swordGlow)">
+    <!-- Blade -->
+    <path d="M100,20 L110,140 L100,145 L90,140 Z" 
+          fill="url(#bladeGradient)" 
+          stroke="#505050" 
+          stroke-width="1.5"/>
+    
+    <!-- Blade highlight -->
+    <path d="M100,20 L105,140 L100,143 L98,140 Z" 
+          fill="rgba(255,255,255,0.4)" 
+          stroke="none"/>
+    
+    <!-- Cross-guard -->
+    <rect x="60" y="138" width="80" height="12" rx="2" 
+          fill="url(#hiltGradient)" 
+          stroke="#654321" 
+          stroke-width="1.5"/>
+    
+    <!-- Grip -->
+    <rect x="90" y="150" width="20" height="35" rx="2" 
+          fill="#654321" 
+          stroke="#4a3219" 
+          stroke-width="1"/>
+    
+    <!-- Grip wrapping -->
+    <line x1="90" y1="160" x2="110" y2="160" stroke="#8b6914" stroke-width="2"/>
+    <line x1="90" y1="170" x2="110" y2="170" stroke="#8b6914" stroke-width="2"/>
+    <line x1="90" y1="180" x2="110" y2="180" stroke="#8b6914" stroke-width="2"/>
+    
+    <!-- Pommel -->
+    <circle cx="100" cy="192" r="8" 
+            fill="url(#hiltGradient)" 
+            stroke="#654321" 
+            stroke-width="1.5"/>
+    
+    <!-- Pommel gem -->
+    <circle cx="100" cy="192" r="4" fill="#8b0000" opacity="0.8"/>
+  </g>
+</svg>

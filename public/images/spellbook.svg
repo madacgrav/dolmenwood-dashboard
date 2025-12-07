@@ -1,0 +1,57 @@
+<svg width="200" height="250" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pageGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f4e4c1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e8d5a8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Book spine -->
+  <rect x="30" y="30" width="20" height="190" 
+        fill="url(#bookGradient)" 
+        stroke="#4a3219" 
+        stroke-width="2"/>
+  
+  <!-- Book cover -->
+  <rect x="45" y="25" width="130" height="200" rx="5"
+        fill="url(#bookGradient)" 
+        stroke="#4a3219" 
+        stroke-width="2.5"/>
+  
+  <!-- Pages effect -->
+  <rect x="170" y="30" width="5" height="190" 
+        fill="url(#pageGradient)" 
+        stroke="#d4c4a0" 
+        stroke-width="0.5"/>
+  
+  <!-- Book decorations -->
+  <path d="M60,50 L160,50" stroke="#d4af37" stroke-width="2"/>
+  <path d="M60,200 L160,200" stroke="#d4af37" stroke-width="2"/>
+  
+  <!-- Ornate symbol on cover -->
+  <circle cx="110" cy="125" r="35" 
+          fill="none" 
+          stroke="#d4af37" 
+          stroke-width="2"/>
+  <path d="M110,95 L110,155 M80,125 L140,125" 
+        stroke="#d4af37" 
+        stroke-width="2"/>
+  <circle cx="110" cy="125" r="8" fill="#d4af37"/>
+  
+  <!-- Corner decorations -->
+  <path d="M60,40 Q65,45 70,40" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+  <path d="M150,40 Q155,45 160,40" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+  <path d="M60,210 Q65,205 70,210" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+  <path d="M150,210 Q155,205 160,210" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+  
+  <!-- Bookmark -->
+  <rect x="105" y="25" width="10" height="50" 
+        fill="#8b0000" 
+        stroke="#650000" 
+        stroke-width="1"/>
+  <path d="M105,75 L110,70 L115,75" fill="#8b0000" stroke="#650000" stroke-width="1"/>
+</svg>
