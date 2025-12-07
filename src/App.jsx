@@ -200,7 +200,7 @@ function App() {
   return (
     <div className="app">
       <div className="sync-status">
-        {user?.email} | {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
+        <span aria-label="Currently logged in user">{user?.email}</span> | {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
       </div>
       {!selectedCharacter && !isCreating ? (
         <CharacterList
