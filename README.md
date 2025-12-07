@@ -5,10 +5,12 @@ A mobile-optimized web application for managing character sheets for the Dolmenw
 ## Features
 
 - ✨ **Full CRUD Operations**: Create, read, update, and delete characters
+- 🔐 **User Authentication**: Secure email/password login system
+- 👤 **Private Character Lists**: Each user has their own unique set of characters
 - 📱 **Mobile-First Design**: Optimized for smartphones and tablets
 - ☁️ **Cloud Sync** (Optional): Characters sync across all your devices in real-time via Firebase
 - 💾 **Offline Support**: Works without internet using localStorage fallback
-- 🎮 **4 Pre-loaded Characters**: Comes with example characters from the PDF
+- 🎮 **4 Pre-loaded Characters**: New accounts start with example characters from the PDF
 - 🎨 **Beautiful UI**: Dark fantasy theme matching Dolmenwood aesthetics
 - 📋 **Complete Character Sheet**: All stats from the official character sheet including:
   - Basic Info (Name, Kindred & Class, Background, Alignment, etc.)
@@ -22,14 +24,15 @@ A mobile-optimized web application for managing character sheets for the Dolmenw
 
 ## Cloud Sync Setup (Optional)
 
-To enable cross-device synchronization:
+To enable cross-device synchronization with user accounts:
 
 1. See **[FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** for detailed setup instructions
 2. Create a free Firebase project
-3. Configure environment variables
-4. Characters will automatically sync across all your devices!
+3. Enable Email/Password authentication
+4. Configure environment variables
+5. Characters will automatically sync across all your devices when you sign in!
 
-**Without Firebase:** App works perfectly fine using localStorage (data stays on your device only)
+**Without Firebase:** App works using localStorage (data stays on your device only, no user accounts)
 
 ## Quick Start
 
@@ -59,6 +62,12 @@ The application will be available at `http://localhost:3000`
 
 ## Usage
 
+### Authentication (when Firebase is enabled)
+
+- **Sign Up**: Create a new account with email and password
+- **Sign In**: Access your account and characters
+- **Sign Out**: Click the "Sign Out" link in the top right corner
+
 ### Main Dashboard
 
 - View all your characters in card format
@@ -75,7 +84,10 @@ The application will be available at `http://localhost:3000`
 
 ### Data Persistence
 
-All character data is stored in your browser's localStorage. Data persists across sessions but is specific to your browser. To backup your data:
+- **With Firebase**: Characters are stored in the cloud and synced across all your devices when signed in to the same account. Each user has their own private character list.
+- **Without Firebase**: All character data is stored in your browser's localStorage. Data persists across sessions but is specific to your browser.
+
+To backup your data:
 
 1. Open browser developer tools (F12)
 2. Go to Application → Local Storage
