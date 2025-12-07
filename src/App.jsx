@@ -71,6 +71,7 @@ function App() {
     unsubscribeAuth = authService.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
       setLoading(true);
+      setError(''); // Clear errors on auth state change
       initializeApp(currentUser);
     });
 
@@ -201,18 +202,7 @@ function App() {
           onError={setError}
         />
         {error && (
-          <div className="error-message" style={{
-            position: 'fixed',
-            top: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#e74c3c',
-            color: 'white',
-            padding: '12px 24px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            zIndex: 1000
-          }}>
+          <div className="error-message">
             {error}
           </div>
         )}

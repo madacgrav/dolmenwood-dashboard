@@ -42,6 +42,7 @@ function AuthForm({ onAuthSuccess, onError }) {
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+    onError(''); // Clear errors when toggling modes
   };
 
   return (
