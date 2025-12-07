@@ -52,17 +52,17 @@ Chivalric Code
     inventory: {
       tinyItems: ['thigh bone flute'],
       equippedItems: [
-        { item: 'Chainmail (m)', weight: '14 AC' },
-        { item: 'Shield', weight: '1 AC' },
-        { item: 'Long sword', weight: '1D8+1' },
-        { item: 'Lance', weight: '1D6+1' }
+        { item: 'Chainmail (m)', weight: '14 AC', description: '' },
+        { item: 'Shield', weight: '1 AC', description: '' },
+        { item: 'Long sword', weight: '1D8+1', description: '' },
+        { item: 'Lance', weight: '1D6+1', description: '' }
       ],
       stowedItems: [
-        { item: 'Water Skin', weight: null },
-        { item: 'with chalice liquid', weight: null },
-        { item: 'riding saddle bags', weight: null },
-        { item: 'Feed (3 days) horse - 500', weight: null },
-        { item: 'Briarwort Prancer', weight: null }
+        { item: 'Water Skin', weight: null, description: '' },
+        { item: 'with chalice liquid', weight: null, description: '' },
+        { item: 'riding saddle bags', weight: null, description: '' },
+        { item: 'Feed (3 days) horse - 500', weight: null, description: '' },
+        { item: 'Briarwort Prancer', weight: null, description: '' }
       ],
       totalWeight: null
     },
