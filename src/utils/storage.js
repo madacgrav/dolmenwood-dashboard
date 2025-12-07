@@ -6,7 +6,7 @@ import {
   deleteDoc, 
   onSnapshot 
 } from 'firebase/firestore';
-import { db, initAuth } from './firebase';
+import { db, authService } from './firebase';
 
 const STORAGE_KEY = 'dolmenwood_characters';
 const COLLECTION_NAME = 'characters';
@@ -15,10 +15,17 @@ const COLLECTION_NAME = 'characters';
 let firebaseAvailable = false;
 let userId = null;
 
-// Initialize Firebase authentication
+// Initialize storage with authenticated user
 export const initStorage = async () => {
   try {
-    const user = await initAuth();
+    const user = authService.getCurrentUser();
+    if (!user) {
+      // No authenticated user, use localStorage only
+      firebaseAvailable = false;
+      userId = null;
+      return false;
+    }
+    
     userId = user.uid;
     firebaseAvailable = true;
     

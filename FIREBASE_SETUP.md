@@ -6,10 +6,11 @@ This guide will help you set up Firebase for cross-browser and cross-machine cha
 
 Firebase provides:
 - ✅ **Cloud storage** - Characters saved in the cloud
+- ✅ **User authentication** - Secure email/password login
 - ✅ **Real-time sync** - Changes appear instantly across all devices
 - ✅ **No backend needed** - Works with static hosting (GitHub Pages)
 - ✅ **Free tier** - Generous free quota for personal use
-- ✅ **Automatic fallback** - Uses localStorage if Firebase is unavailable
+- ✅ **Data isolation** - Each user has their own private character list
 
 ## Setup Steps
 
@@ -74,14 +75,14 @@ service cloud.firestore {
 
 3. Click **"Publish"**
 
-### 6. Enable Anonymous Authentication
+### 6. Enable Email/Password Authentication
 
-This allows users to use the app without creating accounts:
+This allows users to create accounts with email and password:
 
 1. Go to **Build** → **Authentication**
 2. Click **"Get started"**
 3. Click the **"Sign-in method"** tab
-4. Enable **"Anonymous"**
+4. Enable **"Email/Password"**
 5. Click **"Save"**
 
 ### 7. Deploy Environment Variables to GitHub Pages
@@ -127,10 +128,12 @@ If you don't mind your Firebase config being public (it's designed to be):
 ## Testing
 
 1. Run `npm run dev` locally
-2. Create a character
-3. Check the browser console - you should see: `"Signed in anonymously with user ID: ..."`
-4. Open the app in a different browser or device
-5. You should see the same character appear!
+2. You should see the Sign In / Sign Up form
+3. Create an account with an email and password
+4. Create a character
+5. Sign out and sign back in - you should see your character
+6. Open the app in a different browser or device with the same account
+7. You should see the same characters appear!
 
 ## Troubleshooting
 
@@ -138,19 +141,21 @@ If you don't mind your Firebase config being public (it's designed to be):
 
 - Check browser console for errors
 - Verify `.env` file exists with correct values
-- Make sure Anonymous authentication is enabled in Firebase
+- Make sure Email/Password authentication is enabled in Firebase
 
 ### Characters don't sync
 
 - Check Firestore Security Rules are published
-- Verify Anonymous sign-in is enabled
+- Verify Email/Password sign-in is enabled
 - Check browser console for permission errors
+- Make sure you're signed in with the same account on all devices
 
 ### "Offline mode" appears
 
-- App will fallback to localStorage if Firebase fails
+- App will fallback to localStorage if Firebase fails (no cloud sync)
 - Check if `.env` file has correct values
 - Verify internet connection
+- Make sure you're signed in (or sign up for a new account)
 
 ## Cost
 
@@ -171,8 +176,9 @@ Existing localStorage data will automatically migrate to Firebase on first load 
 - ✅ Firebase config values are public (by design)
 - ✅ Security is enforced by Firestore Rules
 - ✅ Each user can only access their own data
-- ✅ Anonymous auth provides a unique user ID per browser
-- ⚠️ Clearing browser data will create a new user ID (data won't be lost, but won't be accessible)
+- ✅ Email/password authentication provides secure user accounts
+- ⚠️ Store your password securely - password reset features require additional Firebase setup
+- ⚠️ Each account has its own unique character list
 
 ## Need Help?
 
