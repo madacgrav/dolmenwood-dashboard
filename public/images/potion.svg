@@ -1,0 +1,74 @@
+<svg width="150" height="200" viewBox="0 0 150 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="potionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a0080;stop-opacity:0.9" />
+      <stop offset="50%" style="stop-color:#6a0099;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#8a00bb;stop-opacity:0.8" />
+    </linearGradient>
+    <radialGradient id="glowGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#8a00bb;stop-opacity:0.2" />
+    </radialGradient>
+    <filter id="potionGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Cork/stopper -->
+  <ellipse cx="75" cy="45" rx="15" ry="8" 
+           fill="#8b7355" 
+           stroke="#654321" 
+           stroke-width="1.5"/>
+  <rect x="60" y="35" width="30" height="12" rx="3"
+        fill="#a0826d" 
+        stroke="#654321" 
+        stroke-width="1.5"/>
+  
+  <!-- Bottle neck -->
+  <path d="M65,47 L65,70 Q65,75 70,75 L80,75 Q85,75 85,70 L85,47" 
+        fill="#88ccdd" 
+        fill-opacity="0.3"
+        stroke="#5a9fb5" 
+        stroke-width="2"/>
+  
+  <!-- Main bottle -->
+  <g filter="url(#potionGlow)">
+    <path d="M70,75 Q50,75 45,85 L45,170 Q45,180 55,180 L95,180 Q105,180 105,170 L105,85 Q100,75 80,75" 
+          fill="url(#potionGradient)" 
+          stroke="#5a9fb5" 
+          stroke-width="2.5"/>
+  </g>
+  
+  <!-- Liquid glow effect -->
+  <ellipse cx="75" cy="130" rx="25" ry="35" 
+           fill="url(#glowGradient)" 
+           opacity="0.6"/>
+  
+  <!-- Glass highlight -->
+  <path d="M60,90 Q55,100 55,120 L55,165" 
+        fill="none"
+        stroke="rgba(255,255,255,0.4)" 
+        stroke-width="3"
+        stroke-linecap="round"/>
+  
+  <!-- Bubbles -->
+  <circle cx="75" cy="120" r="4" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="85" cy="110" r="3" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="65" cy="135" r="3" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="80" cy="145" r="2" fill="rgba(255,255,255,0.5)"/>
+  
+  <!-- Label on bottle -->
+  <rect x="55" y="100" width="40" height="20" rx="2"
+        fill="rgba(244,228,193,0.9)" 
+        stroke="#8b7355" 
+        stroke-width="1"/>
+  <text x="75" y="113" 
+        font-family="Georgia, serif" 
+        font-size="10" 
+        text-anchor="middle"
+        fill="#654321">POTION</text>
+</svg>

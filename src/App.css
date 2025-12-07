@@ -19,12 +19,55 @@ body {
   background-attachment: fixed;
   color: #f4f4f4;
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Decorative D&D themed corner elements on body */
+body::before {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+  background: url('/dolmenwood-dashboard/images/spellbook.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+  animation: subtleFloat 10s ease-in-out infinite;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 80px;
+  background: url('/dolmenwood-dashboard/images/potion.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+  animation: subtleFloat 12s ease-in-out infinite reverse;
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
 }
 
 .app {
   min-height: 100vh;
   padding: 1rem;
   position: relative;
+  overflow: hidden;
 }
 
 /* Sync status indicator */

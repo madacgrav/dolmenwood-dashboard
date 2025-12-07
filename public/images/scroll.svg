@@ -1,0 +1,44 @@
+<svg width="300" height="400" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="parchmentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f4e4c1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e8d5a8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4c4a0;stop-opacity:1" />
+    </linearGradient>
+    <filter id="scrollShadow">
+      <feDropShadow dx="4" dy="4" stdDeviation="5" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Scroll body -->
+  <g filter="url(#scrollShadow)">
+    <!-- Main parchment -->
+    <path d="M40,50 Q30,50 30,60 L30,340 Q30,350 40,350 L260,350 Q270,350 270,340 L270,60 Q270,50 260,50 Z" 
+          fill="url(#parchmentGradient)" 
+          stroke="#8b7355" 
+          stroke-width="2"/>
+    
+    <!-- Top curl -->
+    <ellipse cx="150" cy="50" rx="120" ry="20" fill="#d4c4a0" stroke="#8b7355" stroke-width="2"/>
+    <ellipse cx="150" cy="50" rx="110" ry="15" fill="#e8d5a8"/>
+    
+    <!-- Bottom curl -->
+    <ellipse cx="150" cy="350" rx="120" ry="20" fill="#d4c4a0" stroke="#8b7355" stroke-width="2"/>
+    <ellipse cx="150" cy="350" rx="110" ry="15" fill="#e8d5a8"/>
+    
+    <!-- Decorative borders -->
+    <path d="M50,80 L250,80" stroke="#8b7355" stroke-width="1" opacity="0.5"/>
+    <path d="M50,320 L250,320" stroke="#8b7355" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Decorative corners -->
+    <path d="M50,90 Q55,95 60,90" stroke="#8b7355" stroke-width="1.5" fill="none"/>
+    <path d="M240,90 Q245,95 250,90" stroke="#8b7355" stroke-width="1.5" fill="none"/>
+    <path d="M50,310 Q55,305 60,310" stroke="#8b7355" stroke-width="1.5" fill="none"/>
+    <path d="M240,310 Q245,305 250,310" stroke="#8b7355" stroke-width="1.5" fill="none"/>
+    
+    <!-- Aged texture spots -->
+    <circle cx="80" cy="150" r="3" fill="#c4b494" opacity="0.4"/>
+    <circle cx="220" cy="200" r="4" fill="#c4b494" opacity="0.3"/>
+    <circle cx="100" cy="280" r="3" fill="#c4b494" opacity="0.4"/>
+  </g>
+</svg>

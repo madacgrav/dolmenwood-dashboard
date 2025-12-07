@@ -1,0 +1,64 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dragonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d5016;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#1a3010;stop-opacity:0.9" />
+    </linearGradient>
+    <filter id="dragonGlow">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <g filter="url(#dragonGlow)">
+    <!-- Dragon body silhouette -->
+    <path d="M50,120 Q70,100 100,105 Q130,110 150,100 Q170,90 190,95 L200,100 Q210,110 200,120 L180,125 Q160,130 140,125 Q120,120 100,125 Q80,130 60,125 Z" 
+          fill="url(#dragonGradient)" 
+          stroke="#d4af37" 
+          stroke-width="2"/>
+    
+    <!-- Dragon head -->
+    <ellipse cx="210" cy="100" rx="20" ry="25" 
+             fill="url(#dragonGradient)" 
+             stroke="#d4af37" 
+             stroke-width="2"/>
+    
+    <!-- Dragon eye -->
+    <circle cx="215" cy="95" r="4" fill="#ff6600" opacity="0.9"/>
+    <circle cx="216" cy="94" r="2" fill="#ffff00" opacity="0.9"/>
+    
+    <!-- Horn -->
+    <path d="M220,80 L230,70 L225,85 Z" 
+          fill="#d4af37" 
+          stroke="#8b6914" 
+          stroke-width="1"/>
+    
+    <!-- Wings -->
+    <path d="M120,110 Q100,70 80,60 Q90,75 95,90 Q100,95 120,110 Z" 
+          fill="rgba(45,80,22,0.6)" 
+          stroke="#d4af37" 
+          stroke-width="1.5"/>
+    <path d="M160,105 Q140,65 120,55 Q130,70 135,85 Q140,90 160,105 Z" 
+          fill="rgba(45,80,22,0.6)" 
+          stroke="#d4af37" 
+          stroke-width="1.5"/>
+    
+    <!-- Wing details -->
+    <path d="M120,110 Q105,85 95,90" stroke="#d4af37" stroke-width="0.5" fill="none"/>
+    <path d="M160,105 Q145,80 135,85" stroke="#d4af37" stroke-width="0.5" fill="none"/>
+    
+    <!-- Tail -->
+    <path d="M60,125 Q40,135 30,150 Q35,145 40,140" 
+          fill="none" 
+          stroke="url(#dragonGradient)" 
+          stroke-width="8"
+          stroke-linecap="round"/>
+    
+    <!-- Tail spikes -->
+    <path d="M50,130 L45,125 L48,132" fill="#d4af37"/>
+    <path d="M40,140 L35,135 L38,142" fill="#d4af37"/>
+  </g>
+</svg>
