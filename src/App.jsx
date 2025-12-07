@@ -200,7 +200,7 @@ function App() {
   return (
     <div className="app">
       <div className="sync-status">
-        {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
+        {user?.email} | {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
       </div>
       {!selectedCharacter && !isCreating ? (
         <CharacterList
