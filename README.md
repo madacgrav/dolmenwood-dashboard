@@ -10,7 +10,6 @@ A mobile-optimized web application for managing character sheets for the Dolmenw
 - 📱 **Mobile-First Design**: Optimized for smartphones and tablets
 - ☁️ **Cloud Sync** (Optional): Characters sync across all your devices in real-time via Firebase
 - 💾 **Offline Support**: Works without internet using localStorage fallback
-- 🎮 **4 Pre-loaded Characters**: New accounts start with example characters from the PDF
 - 🎨 **Beautiful UI**: Dark fantasy theme matching Dolmenwood aesthetics
 - 📋 **Complete Character Sheet**: All stats from the official character sheet including:
   - Basic Info (Name, Kindred & Class, Background, Alignment, etc.)
@@ -111,7 +110,7 @@ dolmenwood-dashboard/
 │   │   ├── CharacterSheet.jsx     # Character detail/edit form
 │   │   └── CharacterSheet.css
 │   ├── data/
-│   │   └── exampleCharacters.js   # Pre-loaded example characters
+│   │   └── exampleCharacters.js   # Example characters from the PDFs (not auto-loaded)
 │   ├── utils/
 │   │   └── storage.js             # localStorage utility functions
 │   ├── App.jsx                    # Main app component
@@ -124,12 +123,14 @@ dolmenwood-dashboard/
 
 ## Example Characters
 
-The application comes pre-loaded with 4 characters from the Dolmenwood PDFs:
+The `src/data/exampleCharacters.js` file contains 4 pre-made characters from the Dolmenwood PDFs that can be used as reference:
 
 1. **Brion Blackthorn** - Breggle Knight, Sorcerer's Assistant
 2. **Gilly Dagwood** - Half Human/Elf Friar, Jeweler
 3. **Mudwort Mosfoot** - Mossling Hunter, Squirrel Trainer
 4. **Kitty Grisner** - Grimalkin Bard, Mariner
+
+**Note:** New user accounts start with an empty character list. These examples are included for reference only.
 
 ## Browser Compatibility
 

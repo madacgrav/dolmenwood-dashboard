@@ -4,7 +4,6 @@ import CharacterSheet from './components/CharacterSheet';
 import AuthForm from './components/AuthForm';
 import { storage, initStorage } from './utils/storage';
 import { authService } from './utils/firebase';
-import { exampleCharacters } from './data/exampleCharacters';
 import './App.css';
 
 function App() {
@@ -36,14 +35,7 @@ function App() {
         if (firebaseReady) {
           setSyncStatus('Cloud sync enabled');
           
-          // Initial load - check if we need example data
-          const stored = await storage.getCharacters();
-          if (stored.length === 0) {
-            // If no characters, load examples
-            await storage.saveCharacters(exampleCharacters);
-          }
-          
-          // Set up real-time listener for cloud sync (after initial load)
+          // Set up real-time listener for cloud sync
           unsubscribe = storage.subscribeToCharacters((updatedCharacters) => {
             setCharacters(updatedCharacters);
           });
@@ -52,12 +44,7 @@ function App() {
           
           // Fallback to localStorage
           const stored = await storage.getCharacters();
-          if (stored.length === 0) {
-            await storage.saveCharacters(exampleCharacters);
-            setCharacters(exampleCharacters);
-          } else {
-            setCharacters(stored);
-          }
+          setCharacters(stored);
         }
       } catch (error) {
         console.error('Error initializing app:', error);
