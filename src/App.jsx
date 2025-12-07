@@ -3,6 +3,7 @@ import CharacterList from './components/CharacterList';
 import CharacterSheet from './components/CharacterSheet';
 import Maps from './components/Maps';
 import AuthForm from './components/AuthForm';
+import PartyView from './components/PartyView';
 import { storage, initStorage } from './utils/storage';
 import { mapsStorage, initMapsStorage } from './utils/mapsStorage';
 import { authService } from './utils/firebase';
@@ -13,7 +14,8 @@ function App() {
   const [characters, setCharacters] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [currentView, setCurrentView] = useState('characters'); // 'characters' or 'maps'
+  const [currentView, setCurrentView] = useState('characters'); // 'characters', 'maps', or 'party'
+  const [selectedParty, setSelectedParty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState('Connecting...');
   const [error, setError] = useState('');
@@ -175,6 +177,16 @@ function App() {
     }
   };
 
+  const handleViewParty = (partyName) => {
+    setSelectedParty(partyName);
+    setCurrentView('party');
+  };
+
+  const handleBackFromParty = () => {
+    setSelectedParty(null);
+    setCurrentView('characters');
+  };
+
   if (loading) {
     return (
       <div className="app">
@@ -247,8 +259,17 @@ function App() {
             character={selectedCharacter}
             onSave={handleSave}
             onCancel={handleBackToList}
+            onViewParty={handleViewParty}
           />
         )
+      ) : currentView === 'party' ? (
+        <PartyView
+          partyName={selectedParty}
+          allCharacters={characters}
+          currentUser={user}
+          onBack={handleBackFromParty}
+          onSelectCharacter={handleSelectCharacter}
+        />
       ) : (
         <Maps user={user} mapsStorage={mapsStorage} />
       )}

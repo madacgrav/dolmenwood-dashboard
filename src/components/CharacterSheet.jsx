@@ -18,6 +18,7 @@ const emptyCharacter = {
   alignment: '',
   affiliation: '',
   moonSign: '',
+  partyName: '', // Party membership
   abilityScores: {
     strength: { score: 10, mod: 0 },
     intelligence: { score: 10, mod: 0 },
@@ -65,7 +66,8 @@ const emptyCharacter = {
     gold: null,
     pellucidum: null
   },
-  otherNotes: ''
+  otherNotes: '',
+  diaryEntries: [] // Array of {date, sessionNumber, content, author}
 };
 
 // Helper component for displaying read-only values
@@ -76,7 +78,7 @@ const ReadOnlyField = ({ label, value }) => (
   </div>
 );
 
-function CharacterSheet({ character, onSave, onCancel }) {
+function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
   const [formData, setFormData] = useState(character || emptyCharacter);
   const [isEditing, setIsEditing] = useState(!character); // Edit mode if creating new character
   const sheetRef = useRef(null); // Reference for PDF export
@@ -261,6 +263,36 @@ function CharacterSheet({ character, onSave, onCancel }) {
     }));
   };
 
+  const handleAddDiaryEntry = () => {
+    const sessionNumber = prompt('Enter session number:');
+    const content = prompt('Enter diary entry:');
+    
+    if (content && content.trim()) {
+      const newEntry = {
+        id: crypto.randomUUID(),
+        date: new Date().toISOString(),
+        sessionNumber: sessionNumber ? parseInt(sessionNumber, 10) : null,
+        content: content.trim(),
+        authorId: character?.id || 'new',
+        authorName: formData.name || 'Unknown'
+      };
+      
+      setFormData(prev => ({
+        ...prev,
+        diaryEntries: [...(prev.diaryEntries || []), newEntry]
+      }));
+    }
+  };
+
+  const handleRemoveDiaryEntry = (entryId) => {
+    if (window.confirm('Are you sure you want to delete this diary entry?')) {
+      setFormData(prev => ({
+        ...prev,
+        diaryEntries: (prev.diaryEntries || []).filter(entry => entry.id !== entryId)
+      }));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(formData);
@@ -342,6 +374,12 @@ function CharacterSheet({ character, onSave, onCancel }) {
       ...prev,
       avatar: ''
     }));
+  };
+
+  const handleViewParty = () => {
+    if (formData.partyName && onViewParty) {
+      onViewParty(formData.partyName);
+    }
   };
 
   const handlePrint = () => {
@@ -567,6 +605,33 @@ function CharacterSheet({ character, onSave, onCancel }) {
               </div>
             ) : (
               <ReadOnlyField label="Moon Sign:" value={formData.moonSign} />
+            )}
+          </div>
+
+          <div className="form-row">
+            {isEditing ? (
+              <div className="form-group">
+                <label>Party Name:</label>
+                <input
+                  type="text"
+                  value={formData.partyName}
+                  onChange={(e) => handleChange('partyName', e.target.value)}
+                  placeholder="Enter party name..."
+                />
+              </div>
+            ) : (
+              <>
+                <ReadOnlyField label="Party Name:" value={formData.partyName} />
+                {formData.partyName && (
+                  <button 
+                    type="button" 
+                    className="btn-view-party" 
+                    onClick={handleViewParty}
+                  >
+                    👥 View Party Members
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -1033,6 +1098,44 @@ function CharacterSheet({ character, onSave, onCancel }) {
               (10 copper = 1 silver, 10 silver = 1 gold, 10 gold = 1 pellucidium)
             </div>
           </div>
+        </div>
+
+        {/* Diary Entries */}
+        <div className="section">
+          <h2>Session Diary</h2>
+          {(formData.diaryEntries || []).length > 0 ? (
+            <div className="diary-entries">
+              {formData.diaryEntries.map((entry) => (
+                <div key={entry.id} className="diary-entry">
+                  <div className="diary-entry-header">
+                    {entry.sessionNumber && (
+                      <span className="session-number">Session #{entry.sessionNumber}</span>
+                    )}
+                    <span className="diary-date">{new Date(entry.date).toLocaleDateString()}</span>
+                    {isEditing && (
+                      <button
+                        type="button"
+                        className="btn-remove-diary"
+                        onClick={() => handleRemoveDiaryEntry(entry.id)}
+                        title="Delete entry"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                  <div className="diary-content">{entry.content}</div>
+                  <div className="diary-author">— {entry.authorName}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="readonly-value">No diary entries yet.</div>
+          )}
+          {!isEditing && (
+            <button type="button" className="btn-add-diary" onClick={handleAddDiaryEntry}>
+              + Add Diary Entry
+            </button>
+          )}
         </div>
 
         {/* Other Notes */}
