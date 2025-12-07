@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './CharacterSheet.css';
 
+// Avatar configuration constants
+const AVATAR_MAX_SIZE = 150; // Maximum width/height in pixels
+const AVATAR_JPEG_QUALITY = 0.7; // JPEG compression quality (0-1)
+const AVATAR_MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
+
 const emptyCharacter = {
   name: '',
   avatar: '', // Base64 encoded image
@@ -278,13 +283,13 @@ function CharacterSheet({ character, onSave, onCancel }) {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      alert('Please select a valid image file (JPEG, PNG, GIF, etc.)');
       return;
     }
 
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Image size should be less than 2MB');
+    // Validate file size
+    if (file.size > AVATAR_MAX_FILE_SIZE) {
+      alert('Image file must be smaller than 2MB');
       return;
     }
 
@@ -294,21 +299,20 @@ function CharacterSheet({ character, onSave, onCancel }) {
       img.onload = () => {
         // Create canvas to resize image
         const canvas = document.createElement('canvas');
-        const MAX_SIZE = 150; // Maximum width/height for avatar
         
         let width = img.width;
         let height = img.height;
         
         // Calculate new dimensions maintaining aspect ratio
         if (width > height) {
-          if (width > MAX_SIZE) {
-            height = (height * MAX_SIZE) / width;
-            width = MAX_SIZE;
+          if (width > AVATAR_MAX_SIZE) {
+            height = (height * AVATAR_MAX_SIZE) / width;
+            width = AVATAR_MAX_SIZE;
           }
         } else {
-          if (height > MAX_SIZE) {
-            width = (width * MAX_SIZE) / height;
-            height = MAX_SIZE;
+          if (height > AVATAR_MAX_SIZE) {
+            width = (width * AVATAR_MAX_SIZE) / height;
+            height = AVATAR_MAX_SIZE;
           }
         }
         
@@ -319,7 +323,7 @@ function CharacterSheet({ character, onSave, onCancel }) {
         ctx.drawImage(img, 0, 0, width, height);
         
         // Convert to base64 with reduced quality to keep size small
-        const resizedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        const resizedBase64 = canvas.toDataURL('image/jpeg', AVATAR_JPEG_QUALITY);
         
         setFormData(prev => ({
           ...prev,
