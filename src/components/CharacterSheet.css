@@ -246,6 +246,10 @@
   grid-template-columns: 1fr;
 }
 
+.basic-info .form-row:nth-child(2) {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 @media (max-width: 768px) {
   .basic-info .form-row {
     grid-template-columns: 1fr;

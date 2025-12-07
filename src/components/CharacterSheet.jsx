@@ -3,6 +3,9 @@ import './CharacterSheet.css';
 
 const emptyCharacter = {
   name: '',
+  age: '',
+  height: '',
+  weight: '',
   kindredClass: '',
   background: '',
   alignment: '',
@@ -294,6 +297,43 @@ function CharacterSheet({ character, onSave, onCancel }) {
               </div>
             ) : (
               <ReadOnlyField label="Name:" value={formData.name} />
+            )}
+          </div>
+
+          <div className="form-row">
+            {isEditing ? (
+              <>
+                <div className="form-group">
+                  <label>Age:</label>
+                  <input
+                    type="text"
+                    value={formData.age}
+                    onChange={(e) => handleChange('age', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Height:</label>
+                  <input
+                    type="text"
+                    value={formData.height}
+                    onChange={(e) => handleChange('height', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Weight:</label>
+                  <input
+                    type="text"
+                    value={formData.weight}
+                    onChange={(e) => handleChange('weight', e.target.value)}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <ReadOnlyField label="Age:" value={formData.age} />
+                <ReadOnlyField label="Height:" value={formData.height} />
+                <ReadOnlyField label="Weight:" value={formData.weight} />
+              </>
             )}
           </div>
           
