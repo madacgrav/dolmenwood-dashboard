@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import html2pdf from 'html2pdf.js';
 import './CharacterSheet.css';
+
+// Avatar configuration constants
+const AVATAR_MAX_SIZE = 150; // Maximum width/height in pixels
+const AVATAR_JPEG_QUALITY = 0.7; // JPEG compression quality (0-1)
+const AVATAR_MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
 
 const emptyCharacter = {
   name: '',
+  avatar: '', // Base64 encoded image
   age: '',
   height: '',
   weight: '',
@@ -72,6 +79,7 @@ const ReadOnlyField = ({ label, value }) => (
 function CharacterSheet({ character, onSave, onCancel }) {
   const [formData, setFormData] = useState(character || emptyCharacter);
   const [isEditing, setIsEditing] = useState(!character); // Edit mode if creating new character
+  const sheetRef = useRef(null); // Reference for PDF export
 
   useEffect(() => {
     setFormData(character || emptyCharacter);
@@ -271,19 +279,173 @@ function CharacterSheet({ character, onSave, onCancel }) {
     }
   };
 
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (JPEG, PNG, GIF, etc.)');
+      return;
+    }
+
+    // Validate file size
+    if (file.size > AVATAR_MAX_FILE_SIZE) {
+      alert('Image file must be smaller than 2MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Create canvas to resize image
+        const canvas = document.createElement('canvas');
+        
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions maintaining aspect ratio
+        if (width > height) {
+          if (width > AVATAR_MAX_SIZE) {
+            height = (height * AVATAR_MAX_SIZE) / width;
+            width = AVATAR_MAX_SIZE;
+          }
+        } else {
+          if (height > AVATAR_MAX_SIZE) {
+            width = (width * AVATAR_MAX_SIZE) / height;
+            height = AVATAR_MAX_SIZE;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to base64 with reduced quality to keep size small
+        const resizedBase64 = canvas.toDataURL('image/jpeg', AVATAR_JPEG_QUALITY);
+        
+        setFormData(prev => ({
+          ...prev,
+          avatar: resizedBase64
+        }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    setFormData(prev => ({
+      ...prev,
+      avatar: ''
+    }));
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportPDF = async () => {
+    if (!sheetRef.current) return;
+
+    const element = sheetRef.current;
+    const characterName = formData.name || 'Character';
+    
+    const opt = {
+      margin: [0.5, 0.5, 0.5, 0.5],
+      filename: `${characterName.replace(/[^a-z0-9]/gi, '_')}_CharacterSheet.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#1a1a2e'
+      },
+      jsPDF: { 
+        unit: 'in', 
+        format: 'letter', 
+        orientation: 'portrait' 
+      }
+    };
+
+    try {
+      // Temporarily hide buttons for PDF
+      const buttons = element.querySelectorAll('.btn-back, .btn-edit, .btn-save, .btn-cancel, .btn-print, .btn-pdf');
+      buttons.forEach(btn => btn.style.display = 'none');
+      
+      await html2pdf().set(opt).from(element).save();
+      
+      // Restore buttons
+      buttons.forEach(btn => btn.style.display = '');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
+  };
+
   return (
-    <div className="character-sheet-container">
+    <div className="character-sheet-container" ref={sheetRef}>
       <div className="sheet-header">
         <button className="btn-back" onClick={onCancel}>← Back to List</button>
         <h1>Dolmenwood</h1>
-        {!isEditing && character && (
-          <button className="btn-edit" onClick={handleEdit}>✎ Edit</button>
-        )}
+        <div className="header-buttons">
+          {!isEditing && character && (
+            <>
+              <button className="btn-print" onClick={handlePrint} title="Print Character Sheet">
+                🖨️ Print
+              </button>
+              <button className="btn-pdf" onClick={handleExportPDF} title="Export to PDF">
+                📄 PDF
+              </button>
+              <button className="btn-edit" onClick={handleEdit}>✎ Edit</button>
+            </>
+          )}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="character-sheet">
         {/* Basic Information */}
         <div className="section basic-info">
+          {/* Avatar Section */}
+          <div className="avatar-section">
+            {formData.avatar ? (
+              <div className="avatar-container">
+                <img src={formData.avatar} alt="Character avatar" className="character-avatar" />
+                {isEditing && (
+                  <button 
+                    type="button" 
+                    className="btn-remove-avatar" 
+                    onClick={handleRemoveAvatar}
+                    title="Remove avatar"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ) : (
+              isEditing && (
+                <div className="avatar-upload">
+                  <label htmlFor="avatar-upload" className="avatar-upload-label">
+                    <div className="avatar-placeholder">
+                      <span>+</span>
+                      <span className="upload-text">Add Avatar</span>
+                    </div>
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              )
+            )}
+          </div>
+
           <div className="form-row">
             {isEditing ? (
               <div className="form-group">

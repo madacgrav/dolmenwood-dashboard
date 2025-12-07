@@ -224,6 +224,23 @@
   border-color: #f4d03f;
 }
 
+.card-avatar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.card-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d4af37;
+  box-shadow: 
+    0 0 15px rgba(212, 175, 55, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
 .card-content h2 {
   color: #d4af37;
   font-size: 1.5rem;

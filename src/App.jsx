@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import CharacterList from './components/CharacterList';
 import CharacterSheet from './components/CharacterSheet';
+import Maps from './components/Maps';
 import AuthForm from './components/AuthForm';
 import { storage, initStorage } from './utils/storage';
+import { mapsStorage, initMapsStorage } from './utils/mapsStorage';
 import { authService } from './utils/firebase';
 import './App.css';
 
@@ -11,6 +13,7 @@ function App() {
   const [characters, setCharacters] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [currentView, setCurrentView] = useState('characters'); // 'characters' or 'maps'
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState('Connecting...');
   const [error, setError] = useState('');
@@ -31,6 +34,9 @@ function App() {
 
         // Initialize Firebase storage with authenticated user
         const firebaseReady = await initStorage();
+        
+        // Initialize maps storage (available to all users)
+        await initMapsStorage();
         
         if (firebaseReady) {
           setSyncStatus('Cloud sync enabled');
@@ -200,21 +206,51 @@ function App() {
   return (
     <div className="app">
       <div className="sync-status">
-        {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
+        <span aria-label="Currently logged in user">{user?.email}</span> | {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
       </div>
-      {!selectedCharacter && !isCreating ? (
-        <CharacterList
-          characters={characters}
-          onSelectCharacter={handleSelectCharacter}
-          onCreateNew={handleCreateNew}
-          onDelete={handleDelete}
-        />
+      
+      {/* Navigation */}
+      <div className="nav-tabs">
+        <button 
+          className={`nav-tab ${currentView === 'characters' ? 'active' : ''}`}
+          onClick={() => {
+            setCurrentView('characters');
+            setSelectedCharacter(null);
+            setIsCreating(false);
+          }}
+        >
+          My Characters
+        </button>
+        <button 
+          className={`nav-tab ${currentView === 'maps' ? 'active' : ''}`}
+          onClick={() => {
+            setCurrentView('maps');
+            setSelectedCharacter(null);
+            setIsCreating(false);
+          }}
+        >
+          Shared Maps
+        </button>
+      </div>
+
+      {/* Content based on current view */}
+      {currentView === 'characters' ? (
+        !selectedCharacter && !isCreating ? (
+          <CharacterList
+            characters={characters}
+            onSelectCharacter={handleSelectCharacter}
+            onCreateNew={handleCreateNew}
+            onDelete={handleDelete}
+          />
+        ) : (
+          <CharacterSheet
+            character={selectedCharacter}
+            onSave={handleSave}
+            onCancel={handleBackToList}
+          />
+        )
       ) : (
-        <CharacterSheet
-          character={selectedCharacter}
-          onSave={handleSave}
-          onCancel={handleBackToList}
-        />
+        <Maps user={user} mapsStorage={mapsStorage} />
       )}
     </div>
   );
