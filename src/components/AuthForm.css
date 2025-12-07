@@ -27,6 +27,7 @@
   opacity: 0.15;
   animation: float 6s ease-in-out infinite;
   pointer-events: none;
+  z-index: 0;
 }
 
 .auth-container::after {
@@ -41,6 +42,7 @@
   opacity: 0.12;
   animation: float 8s ease-in-out infinite reverse;
   pointer-events: none;
+  z-index: 0;
 }
 
 @keyframes float {
@@ -65,36 +67,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 1;
-}
-
-/* Decorative sword on left side */
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: -80px;
-  width: 60px;
-  height: 120px;
-  background: url('/dolmenwood-dashboard/images/sword.svg') no-repeat center;
-  background-size: contain;
-  opacity: 0.2;
-  transform: translateY(-50%) rotate(-15deg);
-  pointer-events: none;
-}
-
-/* Decorative potion on right side */
-.auth-card::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: -70px;
-  width: 50px;
-  height: 100px;
-  background: url('/dolmenwood-dashboard/images/potion.svg') no-repeat center;
-  background-size: contain;
-  opacity: 0.2;
-  transform: translateY(-50%) rotate(15deg);
-  pointer-events: none;
 }
 
 /* Inner decorative border */
