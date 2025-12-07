@@ -36,6 +36,21 @@ body {
   border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
+.logout-link {
+  background: none;
+  border: none;
+  color: #d4af37;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.875rem;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.logout-link:hover {
+  color: #f4d03f;
+}
+
 /* Loading container */
 .loading-container {
   display: flex;

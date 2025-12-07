@@ -1,6 +1,12 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, signInAnonymously } from 'firebase/auth';
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from 'firebase/auth';
 
 // Firebase configuration from environment variables
 // Note: These are public configuration values and are safe to commit
@@ -27,27 +33,63 @@ try {
   console.warn('Firebase initialization failed. App will use localStorage fallback.', error);
 }
 
-// Sign in anonymously to allow read/write access
-// This allows users to use the app without creating an account
-let authInitialized = false;
+// Authentication functions
+export const authService = {
+  // Sign up with email and password
+  signUp: async (email, password) => {
+    if (!auth) {
+      throw new Error('Firebase not initialized');
+    }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User created successfully:', userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  },
 
-export const initAuth = async () => {
-  if (!auth) {
-    throw new Error('Firebase not initialized');
-  }
-  
-  if (authInitialized && auth.currentUser) {
-    return auth.currentUser;
-  }
-  
-  try {
-    const userCredential = await signInAnonymously(auth);
-    authInitialized = true;
-    console.log('Signed in anonymously with user ID:', userCredential.user.uid);
-    return userCredential.user;
-  } catch (error) {
-    console.error('Error signing in anonymously:', error);
-    throw error;
+  // Sign in with email and password
+  signIn: async (email, password) => {
+    if (!auth) {
+      throw new Error('Firebase not initialized');
+    }
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('User signed in successfully:', userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      console.error('Error signing in:', error);
+      throw error;
+    }
+  },
+
+  // Sign out
+  signOut: async () => {
+    if (!auth) {
+      throw new Error('Firebase not initialized');
+    }
+    try {
+      await signOut(auth);
+      console.log('User signed out successfully');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
+  },
+
+  // Get current user
+  getCurrentUser: () => {
+    return auth?.currentUser || null;
+  },
+
+  // Listen to auth state changes
+  onAuthStateChanged: (callback) => {
+    if (!auth) {
+      return () => {};
+    }
+    return onAuthStateChanged(auth, callback);
   }
 };
 
