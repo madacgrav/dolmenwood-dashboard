@@ -7,6 +7,7 @@ import {
   onSnapshot 
 } from 'firebase/firestore';
 import { db, authService } from './firebase';
+import { partyMemberStorage } from './partyMemberStorage';
 
 const STORAGE_KEY = 'dolmenwood_characters';
 const COLLECTION_NAME = 'characters';
@@ -131,6 +132,7 @@ export const storage = {
     const newCharacter = {
       ...character,
       id: crypto.randomUUID(),
+      userId, // Store userId for reference
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -141,6 +143,12 @@ export const storage = {
           doc(db, `users/${userId}/${COLLECTION_NAME}`, newCharacter.id),
           newCharacter
         );
+        
+        // Sync to shared party members if character is in a party
+        if (newCharacter.partyName) {
+          await partyMemberStorage.savePartyMember(newCharacter);
+        }
+        
         return newCharacter;
       } catch (error) {
         console.error('Error adding to Firestore:', error);
@@ -152,6 +160,12 @@ export const storage = {
     const characters = await storage.getCharacters();
     characters.push(newCharacter);
     await storage.saveCharacters(characters);
+    
+    // Sync to shared party members if character is in a party
+    if (newCharacter.partyName) {
+      await partyMemberStorage.savePartyMember(newCharacter);
+    }
+    
     return newCharacter;
   },
 
@@ -169,8 +183,18 @@ export const storage = {
           updatedData,
           { merge: true }
         );
+        
+        // Sync to shared party members
+        const fullData = { id, userId, ...updatedData };
+        if (fullData.partyName) {
+          await partyMemberStorage.savePartyMember(fullData);
+        } else {
+          // Character left the party, remove from shared collection
+          await partyMemberStorage.removePartyMember(id);
+        }
+        
         // Return the merged data
-        return { id, ...updatedData };
+        return fullData;
       } catch (error) {
         console.error('Error updating in Firestore:', error);
         // Fallback to localStorage
@@ -183,6 +207,15 @@ export const storage = {
     if (index !== -1) {
       characters[index] = { ...characters[index], ...updatedData };
       await storage.saveCharacters(characters);
+      
+      // Sync to shared party members
+      if (characters[index].partyName) {
+        await partyMemberStorage.savePartyMember(characters[index]);
+      } else {
+        // Character left the party, remove from shared collection
+        await partyMemberStorage.removePartyMember(id);
+      }
+      
       return characters[index];
     }
     return null;
@@ -193,6 +226,10 @@ export const storage = {
     if (firebaseAvailable && userId) {
       try {
         await deleteDoc(doc(db, `users/${userId}/${COLLECTION_NAME}`, id));
+        
+        // Remove from shared party members
+        await partyMemberStorage.removePartyMember(id);
+        
         return await storage.getCharacters();
       } catch (error) {
         console.error('Error deleting from Firestore:', error);
@@ -204,6 +241,10 @@ export const storage = {
     const characters = await storage.getCharacters();
     const filtered = characters.filter(char => char.id !== id);
     await storage.saveCharacters(filtered);
+    
+    // Remove from shared party members
+    await partyMemberStorage.removePartyMember(id);
+    
     return filtered;
   },
 
