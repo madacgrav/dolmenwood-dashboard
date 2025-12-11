@@ -4,24 +4,30 @@ import CharacterSheet from './components/CharacterSheet';
 import Maps from './components/Maps';
 import AuthForm from './components/AuthForm';
 import PartyView from './components/PartyView';
+import PartyList from './components/PartyList';
+import PartyForm from './components/PartyForm';
 import { storage, initStorage } from './utils/storage';
 import { mapsStorage, initMapsStorage } from './utils/mapsStorage';
+import { partyStorage, initPartyStorage } from './utils/partyStorage';
 import { authService } from './utils/firebase';
 import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [characters, setCharacters] = useState([]);
+  const [parties, setParties] = useState([]);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [currentView, setCurrentView] = useState('characters'); // 'characters', 'maps', or 'party'
   const [selectedParty, setSelectedParty] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isCreatingParty, setIsCreatingParty] = useState(false);
+  const [currentView, setCurrentView] = useState('characters'); // 'characters', 'maps', 'parties', or 'party-view'
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState('Connecting...');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    let unsubscribe = null;
+    let unsubscribeCharacters = null;
+    let unsubscribeParties = null;
     let unsubscribeAuth = null;
 
     const initializeApp = async (currentUser) => {
@@ -31,11 +37,15 @@ function App() {
           setLoading(false);
           setSyncStatus('Not logged in');
           setCharacters([]);
+          setParties([]);
           return;
         }
 
         // Initialize Firebase storage with authenticated user
         const firebaseReady = await initStorage();
+        
+        // Initialize party storage
+        await initPartyStorage();
         
         // Initialize maps storage (available to all users)
         await initMapsStorage();
@@ -44,8 +54,13 @@ function App() {
           setSyncStatus('Cloud sync enabled');
           
           // Set up real-time listener for cloud sync
-          unsubscribe = storage.subscribeToCharacters((updatedCharacters) => {
+          unsubscribeCharacters = storage.subscribeToCharacters((updatedCharacters) => {
             setCharacters(updatedCharacters);
+          });
+          
+          // Set up real-time listener for parties
+          unsubscribeParties = partyStorage.subscribeToParties((updatedParties) => {
+            setParties(updatedParties);
           });
         } else {
           setSyncStatus('Offline mode');
@@ -53,6 +68,9 @@ function App() {
           // Fallback to localStorage
           const stored = await storage.getCharacters();
           setCharacters(stored);
+          
+          const storedParties = await partyStorage.getParties();
+          setParties(storedParties);
         }
       } catch (error) {
         console.error('Error initializing app:', error);
@@ -72,8 +90,11 @@ function App() {
 
     // Cleanup listeners on unmount
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
+      if (unsubscribeCharacters) {
+        unsubscribeCharacters();
+      }
+      if (unsubscribeParties) {
+        unsubscribeParties();
       }
       if (unsubscribeAuth) {
         unsubscribeAuth();
@@ -179,12 +200,67 @@ function App() {
 
   const handleViewParty = (partyName) => {
     setSelectedParty(partyName);
-    setCurrentView('party');
+    setCurrentView('party-view');
   };
 
   const handleBackFromParty = () => {
     setSelectedParty(null);
-    setCurrentView('characters');
+    setCurrentView('parties');
+  };
+
+  // Party management handlers
+  const handleCreateNewParty = () => {
+    setIsCreatingParty(true);
+    setSelectedParty(null);
+  };
+
+  const handleSelectParty = (party) => {
+    setSelectedParty(party);
+    setIsCreatingParty(false);
+  };
+
+  const handleBackToPartyList = async () => {
+    setSelectedParty(null);
+    setIsCreatingParty(false);
+    // Refresh party list (will be updated by real-time listener if available)
+    if (syncStatus === 'Offline mode') {
+      const updated = await partyStorage.getParties();
+      setParties(updated);
+    }
+  };
+
+  const handleSaveParty = async (partyData) => {
+    try {
+      if (selectedParty && selectedParty.id) {
+        // Update existing party
+        await partyStorage.updateParty(selectedParty.id, partyData);
+      } else {
+        // Create new party
+        await partyStorage.addParty(partyData);
+      }
+      handleBackToPartyList();
+    } catch (error) {
+      console.error('Error saving party:', error);
+      alert('Error saving party. Please try again.');
+    }
+  };
+
+  const handleDeleteParty = async (id) => {
+    if (window.confirm('Are you sure you want to delete this party? This will not delete the characters in the party.')) {
+      try {
+        await partyStorage.deleteParty(id);
+        if (syncStatus === 'Offline mode') {
+          const updated = await partyStorage.getParties();
+          setParties(updated);
+        }
+        if (selectedParty?.id === id) {
+          handleBackToPartyList();
+        }
+      } catch (error) {
+        console.error('Error deleting party:', error);
+        alert('Error deleting party. Please try again.');
+      }
+    }
   };
 
   if (loading) {
@@ -234,6 +310,16 @@ function App() {
           My Characters
         </button>
         <button 
+          className={`nav-tab ${currentView === 'parties' || currentView === 'party-view' ? 'active' : ''}`}
+          onClick={() => {
+            setCurrentView('parties');
+            setSelectedParty(null);
+            setIsCreatingParty(false);
+          }}
+        >
+          Parties
+        </button>
+        <button 
           className={`nav-tab ${currentView === 'maps' ? 'active' : ''}`}
           onClick={() => {
             setCurrentView('maps');
@@ -262,7 +348,23 @@ function App() {
             onViewParty={handleViewParty}
           />
         )
-      ) : currentView === 'party' ? (
+      ) : currentView === 'parties' ? (
+        !selectedParty && !isCreatingParty ? (
+          <PartyList
+            parties={parties}
+            onSelectParty={handleSelectParty}
+            onCreateNew={handleCreateNewParty}
+            onDelete={handleDeleteParty}
+            onViewParty={handleViewParty}
+          />
+        ) : (
+          <PartyForm
+            party={selectedParty}
+            onSave={handleSaveParty}
+            onCancel={handleBackToPartyList}
+          />
+        )
+      ) : currentView === 'party-view' ? (
         <PartyView
           partyName={selectedParty}
           allCharacters={characters}
