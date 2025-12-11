@@ -70,7 +70,19 @@ export const partyMemberStorage = {
   // Save or update a party member entry
   // This creates a lightweight reference to the character with just the data needed for display
   savePartyMember: async (characterData) => {
-    if (!characterData.partyName || !characterData.id) {
+    // Validate required fields
+    if (!characterData || typeof characterData !== 'object') {
+      console.error('Invalid character data provided to savePartyMember');
+      return null;
+    }
+    
+    if (!characterData.id || typeof characterData.id !== 'string') {
+      console.error('Character ID is required and must be a string');
+      return null;
+    }
+    
+    if (!characterData.partyName || typeof characterData.partyName !== 'string') {
+      console.error('Party name is required and must be a string');
       return null;
     }
 

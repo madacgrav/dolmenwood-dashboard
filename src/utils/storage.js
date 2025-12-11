@@ -132,7 +132,7 @@ export const storage = {
     const newCharacter = {
       ...character,
       id: crypto.randomUUID(),
-      userId: userId, // Store userId for reference
+      userId, // Store userId for reference
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };

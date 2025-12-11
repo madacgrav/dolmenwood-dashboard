@@ -58,51 +58,59 @@ function PartyView({ partyName, allCharacters, currentUser, onBack, onSelectChar
         <h2>Party Members ({partyMembers.length})</h2>
         {partyMembers.length > 0 ? (
           <div className="party-members-grid">
-            {partyMembers.map((member) => {
-              // Check if this character belongs to the current user
-              const isOwnedByUser = currentUser && allCharacters && 
-                allCharacters.some(char => char.id === member.id);
+            {(() => {
+              // Create a Map of owned character IDs to full character data for O(1) lookups
+              const ownedCharactersMap = new Map();
+              if (currentUser && allCharacters) {
+                allCharacters.forEach(char => {
+                  ownedCharactersMap.set(char.id, char);
+                });
+              }
               
-              return (
-                <div 
-                  key={member.id} 
-                  className={`party-member-card ${!isOwnedByUser ? 'not-owned' : ''}`}
-                  onClick={() => {
-                    if (isOwnedByUser) {
-                      // Find the full character data from allCharacters
-                      const fullCharacter = allCharacters.find(char => char.id === member.id);
-                      onSelectCharacter(fullCharacter);
-                    }
-                  }}
-                  style={{ cursor: isOwnedByUser ? 'pointer' : 'default' }}
-                >
-                  {member.avatar && (
-                    <div className="member-avatar-container">
-                      <img src={member.avatar} alt={member.name} className="member-avatar" />
+              return partyMembers.map((member) => {
+                // O(1) lookup to check ownership and get full character data
+                const fullCharacter = ownedCharactersMap.get(member.id);
+                const isOwnedByUser = !!fullCharacter;
+                
+                return (
+                  <div 
+                    key={member.id} 
+                    className={`party-member-card ${!isOwnedByUser ? 'not-owned' : ''}`}
+                    onClick={() => {
+                      if (isOwnedByUser) {
+                        onSelectCharacter(fullCharacter);
+                      }
+                    }}
+                    style={{ cursor: isOwnedByUser ? 'pointer' : 'default' }}
+                  >
+                    {member.avatar && (
+                      <div className="member-avatar-container">
+                        <img src={member.avatar} alt={member.name} className="member-avatar" />
+                      </div>
+                    )}
+                    <h3>{member.name}</h3>
+                    <p className="member-class">{member.kindredClass}</p>
+                    <div className="member-stats">
+                      <div className="stat">
+                        <span className="label">Level</span>
+                        <span className="value">{member.level}</span>
+                      </div>
+                      <div className="stat">
+                        <span className="label">HP</span>
+                        <span className="value">{member.hp}/{member.maxHp}</span>
+                      </div>
+                      <div className="stat">
+                        <span className="label">AC</span>
+                        <span className="value">{member.ac}</span>
+                      </div>
                     </div>
-                  )}
-                  <h3>{member.name}</h3>
-                  <p className="member-class">{member.kindredClass}</p>
-                  <div className="member-stats">
-                    <div className="stat">
-                      <span className="label">Level</span>
-                      <span className="value">{member.level}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="label">HP</span>
-                      <span className="value">{member.hp}/{member.maxHp}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="label">AC</span>
-                      <span className="value">{member.ac}</span>
-                    </div>
+                    {!isOwnedByUser && (
+                      <div className="not-owned-badge">Other Player</div>
+                    )}
                   </div>
-                  {!isOwnedByUser && (
-                    <div className="not-owned-badge">Other Player</div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
         ) : (
           <div className="empty-state">
