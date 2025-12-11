@@ -10,6 +10,7 @@ import HealthCheckIndicator from './components/HealthCheckIndicator';
 import { storage, initStorage } from './utils/storage';
 import { mapsStorage, initMapsStorage } from './utils/mapsStorage';
 import { partyStorage, initPartyStorage } from './utils/partyStorage';
+import { initPartyMemberStorage } from './utils/partyMemberStorage';
 import { authService } from './utils/firebase';
 import './App.css';
 
@@ -35,6 +36,9 @@ function App() {
       try {
         // Initialize party storage (shared, available to all users)
         const partyFirebaseReady = await initPartyStorage();
+        
+        // Initialize party member storage (shared, available to all users)
+        await initPartyMemberStorage();
         
         // Initialize maps storage (shared, available to all users)
         await initMapsStorage();

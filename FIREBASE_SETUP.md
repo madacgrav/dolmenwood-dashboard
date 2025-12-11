@@ -77,6 +77,13 @@ service cloud.firestore {
       allow create, update, delete: if request.auth != null;
     }
     
+    // Allow all users (even unauthenticated) to read shared party members
+    // Only authenticated users can create, update, or delete party member entries
+    match /shared_party_members/{memberId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+    }
+    
     // Allow all users (even unauthenticated) to read shared maps
     // Only authenticated users can create, update, or delete maps
     match /shared_maps/{mapId} {
@@ -159,6 +166,8 @@ This error occurs when Firestore Security Rules are not correctly configured:
 - The rules must include permissions for:
   - `users/{userId}` - User-specific character data
   - `shared_parties/{partyId}` - Shared party data (readable by all, writable by authenticated users)
+  - `shared_party_members/{memberId}` - Shared party member data (readable by all, writable by authenticated users)
+  - `shared_maps/{mapId}` - Shared map data (readable by all, writable by authenticated users)
   - `shared_maps/{mapId}` - Shared map data (readable by all, writable by authenticated users)
 - Check the **Firestore Rules** tab in Firebase Console to verify rules are published
 - After publishing rules, it may take a few seconds to take effect

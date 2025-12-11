@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { partyMemberStorage } from '../utils/partyMemberStorage';
 import './PartyView.css';
 
 function PartyView({ partyName, allCharacters, currentUser, onBack, onSelectCharacter }) {
@@ -6,30 +7,42 @@ function PartyView({ partyName, allCharacters, currentUser, onBack, onSelectChar
   const [partyDiary, setPartyDiary] = useState([]);
 
   useEffect(() => {
-    if (partyName && allCharacters) {
-      // Filter characters that belong to this party
-      const members = allCharacters.filter(char => char.partyName === partyName);
-      setPartyMembers(members);
-
-      // Collect all diary entries from party members and sort by date
-      const allDiaryEntries = [];
-      members.forEach(member => {
-        if (member.diaryEntries && member.diaryEntries.length > 0) {
-          member.diaryEntries.forEach(entry => {
-            allDiaryEntries.push({
-              ...entry,
-              characterName: member.name,
-              characterId: member.id
-            });
-          });
-        }
+    if (partyName) {
+      // Fetch party members from shared collection
+      const fetchPartyMembers = async () => {
+        const members = await partyMemberStorage.getPartyMembers(partyName);
+        setPartyMembers(members);
+      };
+      
+      fetchPartyMembers();
+      
+      // Subscribe to real-time updates
+      const unsubscribe = partyMemberStorage.subscribeToPartyMembers(partyName, (updatedMembers) => {
+        setPartyMembers(updatedMembers);
       });
+      
+      // Collect diary entries from user's own characters that are in this party
+      if (allCharacters) {
+        const allDiaryEntries = [];
+        const userPartyMembers = allCharacters.filter(char => char.partyName === partyName);
+        userPartyMembers.forEach(member => {
+          if (member.diaryEntries && member.diaryEntries.length > 0) {
+            member.diaryEntries.forEach(entry => {
+              allDiaryEntries.push({
+                ...entry,
+                characterName: member.name,
+                characterId: member.id
+              });
+            });
+          }
+        });
 
-      // Sort by date (newest first)
-      // Using localeCompare on ISO 8601 strings (from toISOString()) 
-      // which are lexicographically sortable
-      allDiaryEntries.sort((a, b) => b.date.localeCompare(a.date));
-      setPartyDiary(allDiaryEntries);
+        // Sort by date (newest first)
+        allDiaryEntries.sort((a, b) => b.date.localeCompare(a.date));
+        setPartyDiary(allDiaryEntries);
+      }
+      
+      return unsubscribe;
     }
   }, [partyName, allCharacters]);
 
@@ -45,35 +58,51 @@ function PartyView({ partyName, allCharacters, currentUser, onBack, onSelectChar
         <h2>Party Members ({partyMembers.length})</h2>
         {partyMembers.length > 0 ? (
           <div className="party-members-grid">
-            {partyMembers.map((member) => (
-              <div 
-                key={member.id} 
-                className="party-member-card"
-                onClick={() => onSelectCharacter(member)}
-              >
-                {member.avatar && (
-                  <div className="member-avatar-container">
-                    <img src={member.avatar} alt={member.name} className="member-avatar" />
+            {partyMembers.map((member) => {
+              // Check if this character belongs to the current user
+              const isOwnedByUser = currentUser && allCharacters && 
+                allCharacters.some(char => char.id === member.id);
+              
+              return (
+                <div 
+                  key={member.id} 
+                  className={`party-member-card ${!isOwnedByUser ? 'not-owned' : ''}`}
+                  onClick={() => {
+                    if (isOwnedByUser) {
+                      // Find the full character data from allCharacters
+                      const fullCharacter = allCharacters.find(char => char.id === member.id);
+                      onSelectCharacter(fullCharacter);
+                    }
+                  }}
+                  style={{ cursor: isOwnedByUser ? 'pointer' : 'default' }}
+                >
+                  {member.avatar && (
+                    <div className="member-avatar-container">
+                      <img src={member.avatar} alt={member.name} className="member-avatar" />
+                    </div>
+                  )}
+                  <h3>{member.name}</h3>
+                  <p className="member-class">{member.kindredClass}</p>
+                  <div className="member-stats">
+                    <div className="stat">
+                      <span className="label">Level</span>
+                      <span className="value">{member.level}</span>
+                    </div>
+                    <div className="stat">
+                      <span className="label">HP</span>
+                      <span className="value">{member.hp}/{member.maxHp}</span>
+                    </div>
+                    <div className="stat">
+                      <span className="label">AC</span>
+                      <span className="value">{member.ac}</span>
+                    </div>
                   </div>
-                )}
-                <h3>{member.name}</h3>
-                <p className="member-class">{member.kindredClass}</p>
-                <div className="member-stats">
-                  <div className="stat">
-                    <span className="label">Level</span>
-                    <span className="value">{member.level}</span>
-                  </div>
-                  <div className="stat">
-                    <span className="label">HP</span>
-                    <span className="value">{member.hp}/{member.maxHp}</span>
-                  </div>
-                  <div className="stat">
-                    <span className="label">AC</span>
-                    <span className="value">{member.ac}</span>
-                  </div>
+                  {!isOwnedByUser && (
+                    <div className="not-owned-badge">Other Player</div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="empty-state">
