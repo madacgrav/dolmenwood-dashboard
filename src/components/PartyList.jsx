@@ -1,12 +1,16 @@
 import React from 'react';
 import './PartyList.css';
 
-function PartyList({ parties, onSelectParty, onCreateNew, onDelete, onViewParty }) {
+function PartyList({ parties, onSelectParty, onCreateNew, onDelete, onViewParty, isAuthenticated }) {
   return (
     <div className="party-list-container">
       <div className="header">
         <h1>Party Management</h1>
-        <p className="subtitle">Manage your adventuring parties</p>
+        <p className="subtitle">
+          {isAuthenticated 
+            ? 'Manage your adventuring parties' 
+            : 'View adventuring parties (sign in to create or edit)'}
+        </p>
       </div>
       
       <button className="btn-create" onClick={onCreateNew}>
@@ -16,7 +20,7 @@ function PartyList({ parties, onSelectParty, onCreateNew, onDelete, onViewParty 
       <div className="party-grid">
         {parties.map((party) => (
           <div key={party.id} className="party-card">
-            <div className="card-content" onClick={() => onSelectParty(party)}>
+            <div className="card-content" onClick={() => isAuthenticated ? onSelectParty(party) : alert('Please sign in to edit parties')}>
               <h2>{party.name}</h2>
               {party.description && (
                 <p className="party-description">{party.description}</p>
@@ -38,16 +42,18 @@ function PartyList({ parties, onSelectParty, onCreateNew, onDelete, onViewParty 
               >
                 👥 View Members
               </button>
-              <button 
-                className="btn-delete"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(party.id);
-                }}
-                aria-label="Delete party"
-              >
-                ✕
-              </button>
+              {isAuthenticated && (
+                <button 
+                  className="btn-delete"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(party.id);
+                  }}
+                  aria-label="Delete party"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -55,7 +61,7 @@ function PartyList({ parties, onSelectParty, onCreateNew, onDelete, onViewParty 
 
       {parties.length === 0 && (
         <div className="empty-state">
-          <p>No parties yet. Create your first adventuring party!</p>
+          <p>No parties yet. {isAuthenticated ? 'Create your first adventuring party!' : 'Sign in to create the first adventuring party!'}</p>
         </div>
       )}
     </div>
