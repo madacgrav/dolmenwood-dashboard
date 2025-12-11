@@ -283,6 +283,12 @@ function App() {
     );
   }
 
+  const handleAuthRequired = () => {
+    setCurrentView('auth');
+    setIsCreatingParty(false);
+    setSelectedParty(null);
+  };
+
   return (
     <div className="app">
       {/* Show auth status and controls */}
@@ -402,7 +408,7 @@ function App() {
                 <div className="auth-required">
                   <h2>Authentication Required</h2>
                   <p>Please sign in to create or edit parties.</p>
-                  <button onClick={() => { setCurrentView('auth'); setIsCreatingParty(false); setSelectedParty(null); }} className="btn-create">
+                  <button onClick={handleAuthRequired} className="btn-create">
                     Sign In
                   </button>
                   <button onClick={handleBackToPartyList} className="btn-cancel" style={{ marginLeft: '10px' }}>
