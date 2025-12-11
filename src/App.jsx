@@ -6,6 +6,7 @@ import AuthForm from './components/AuthForm';
 import PartyView from './components/PartyView';
 import PartyList from './components/PartyList';
 import PartyForm from './components/PartyForm';
+import HealthCheckIndicator from './components/HealthCheckIndicator';
 import { storage, initStorage } from './utils/storage';
 import { mapsStorage, initMapsStorage } from './utils/mapsStorage';
 import { partyStorage, initPartyStorage } from './utils/partyStorage';
@@ -302,6 +303,7 @@ function App() {
             <span>Not logged in | <button onClick={() => setCurrentView('auth')} className="logout-link">Sign In</button></span>
           </>
         )}
+        <HealthCheckIndicator />
       </div>
       
       {/* Show auth form if user wants to sign in */}
