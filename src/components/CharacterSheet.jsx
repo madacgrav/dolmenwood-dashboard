@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
+import { partyStorage } from '../utils/partyStorage';
 import './CharacterSheet.css';
 
 // Avatar configuration constants
@@ -84,11 +85,26 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
   const sheetRef = useRef(null); // Reference for PDF export
   const [showDiaryForm, setShowDiaryForm] = useState(false);
   const [newDiaryEntry, setNewDiaryEntry] = useState({ sessionNumber: '', content: '' });
+  const [availableParties, setAvailableParties] = useState([]);
 
   useEffect(() => {
     setFormData(character || emptyCharacter);
     setIsEditing(!character); // Edit mode if creating new character
   }, [character]);
+
+  // Load available parties for the dropdown
+  useEffect(() => {
+    const loadParties = async () => {
+      try {
+        const parties = await partyStorage.getParties();
+        setAvailableParties(parties);
+      } catch (error) {
+        console.error('Error loading parties:', error);
+        setAvailableParties([]);
+      }
+    };
+    loadParties();
+  }, []);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -624,12 +640,21 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
             {isEditing ? (
               <div className="form-group">
                 <label>Party Name:</label>
-                <input
-                  type="text"
-                  value={formData.partyName}
+                <select
+                  value={formData.partyName || ''}
                   onChange={(e) => handleChange('partyName', e.target.value)}
-                  placeholder="Enter party name..."
-                />
+                >
+                  <option value="">-- No Party --</option>
+                  {availableParties.length > 0 ? (
+                    availableParties.map((party) => (
+                      <option key={party.id} value={party.name}>
+                        {party.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No parties available</option>
+                  )}
+                </select>
               </div>
             ) : (
               <>
