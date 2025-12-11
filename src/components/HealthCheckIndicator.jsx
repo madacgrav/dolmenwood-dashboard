@@ -11,10 +11,10 @@ function HealthCheckIndicator() {
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    // Start periodic health checks
+    // Start periodic health checks with default interval
     const cleanup = startPeriodicHealthCheck((result) => {
       setHealthStatus(result);
-    }, 30000); // Check every 30 seconds
+    });
 
     // Cleanup on unmount
     return cleanup;

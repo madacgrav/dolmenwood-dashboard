@@ -1,6 +1,11 @@
 import { db } from './firebase';
 import { collection, getDocs, query, limit } from 'firebase/firestore';
 
+// Configuration constants
+const HEALTH_CHECK_COLLECTION = 'shared_parties'; // Use shared collection for health checks
+const CONNECTION_TIMEOUT_MS = 5000; // 5 seconds timeout for connectivity check
+export const DEFAULT_CHECK_INTERVAL_MS = 30000; // 30 seconds between checks
+
 // Health check status
 export const HEALTH_STATUS = {
   CHECKING: 'checking',
@@ -28,12 +33,12 @@ export const checkDatabaseConnectivity = async () => {
   try {
     // Attempt a lightweight query to test connectivity
     // Query for shared_parties collection with limit 1 (minimal data transfer)
-    const testQuery = query(collection(db, 'shared_parties'), limit(1));
+    const testQuery = query(collection(db, HEALTH_CHECK_COLLECTION), limit(1));
     const startTime = Date.now();
     
-    // Set a timeout for the query (5 seconds)
+    // Set a timeout for the query
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Connection timeout')), 5000)
+      setTimeout(() => reject(new Error('Connection timeout')), CONNECTION_TIMEOUT_MS)
     );
     
     const queryPromise = getDocs(testQuery);
@@ -78,7 +83,7 @@ export const checkDatabaseConnectivity = async () => {
  * @param {number} intervalMs - Check interval in milliseconds (default: 30000 = 30s)
  * @returns {Function} Cleanup function to stop the interval
  */
-export const startPeriodicHealthCheck = (onStatusChange, intervalMs = 30000) => {
+export const startPeriodicHealthCheck = (onStatusChange, intervalMs = DEFAULT_CHECK_INTERVAL_MS) => {
   let lastStatus = null;
   
   const performCheck = async () => {
