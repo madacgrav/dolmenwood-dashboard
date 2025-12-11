@@ -20,7 +20,7 @@ function App() {
   const [selectedParty, setSelectedParty] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isCreatingParty, setIsCreatingParty] = useState(false);
-  const [currentView, setCurrentView] = useState('characters'); // 'characters', 'maps', 'parties', or 'party-view'
+  const [currentView, setCurrentView] = useState('parties'); // 'characters', 'maps', 'parties', 'party-view', or 'auth'
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState('Connecting...');
   const [error, setError] = useState('');
@@ -283,106 +283,146 @@ function App() {
     );
   }
 
-  // Show auth form if not logged in
-  if (!user) {
-    return (
-      <div className="app">
-        <AuthForm 
-          onAuthSuccess={handleAuth} 
-          onError={setError}
-        />
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="app">
+      {/* Show auth status and controls */}
       <div className="sync-status">
-        <span aria-label="Currently logged in user">{user?.email}</span> | {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
+        {user ? (
+          <>
+            <span aria-label="Currently logged in user">{user.email}</span> | {syncStatus} | <button onClick={handleLogout} className="logout-link">Sign Out</button>
+          </>
+        ) : (
+          <>
+            <span>Not logged in | <button onClick={() => setCurrentView('auth')} className="logout-link">Sign In</button></span>
+          </>
+        )}
       </div>
       
-      {/* Navigation */}
-      <div className="nav-tabs">
-        <button 
-          className={`nav-tab ${currentView === 'characters' ? 'active' : ''}`}
-          onClick={() => {
-            setCurrentView('characters');
-            setSelectedCharacter(null);
-            setIsCreating(false);
-          }}
-        >
-          My Characters
-        </button>
-        <button 
-          className={`nav-tab ${currentView === 'parties' || currentView === 'party-view' ? 'active' : ''}`}
-          onClick={() => {
-            setCurrentView('parties');
-            setSelectedParty(null);
-            setIsCreatingParty(false);
-          }}
-        >
-          Parties
-        </button>
-        <button 
-          className={`nav-tab ${currentView === 'maps' ? 'active' : ''}`}
-          onClick={() => {
-            setCurrentView('maps');
-            setSelectedCharacter(null);
-            setIsCreating(false);
-          }}
-        >
-          Shared Maps
-        </button>
-      </div>
-
-      {/* Content based on current view */}
-      {currentView === 'characters' ? (
-        !selectedCharacter && !isCreating ? (
-          <CharacterList
-            characters={characters}
-            onSelectCharacter={handleSelectCharacter}
-            onCreateNew={handleCreateNew}
-            onDelete={handleDelete}
+      {/* Show auth form if user wants to sign in */}
+      {!user && currentView === 'auth' ? (
+        <div>
+          <AuthForm 
+            onAuthSuccess={handleAuth} 
+            onError={setError}
           />
-        ) : (
-          <CharacterSheet
-            character={selectedCharacter}
-            onSave={handleSave}
-            onCancel={handleBackToList}
-            onViewParty={handleViewParty}
-          />
-        )
-      ) : currentView === 'parties' ? (
-        !selectedParty && !isCreatingParty ? (
-          <PartyList
-            parties={parties}
-            onSelectParty={handleSelectParty}
-            onCreateNew={handleCreateNewParty}
-            onDelete={handleDeleteParty}
-            onViewParty={handleViewParty}
-          />
-        ) : (
-          <PartyForm
-            party={selectedParty}
-            onSave={handleSaveParty}
-            onCancel={handleBackToPartyList}
-          />
-        )
-      ) : currentView === 'party-view' ? (
-        <PartyView
-          partyName={selectedParty}
-          allCharacters={characters}
-          currentUser={user}
-          onBack={handleBackFromParty}
-          onSelectCharacter={handleSelectCharacter}
-        />
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <button onClick={() => setCurrentView('parties')} className="logout-link">
+              ← Back to Parties
+            </button>
+          </div>
+        </div>
       ) : (
-        <Maps user={user} mapsStorage={mapsStorage} />
+        <>
+          {/* Navigation */}
+          <div className="nav-tabs">
+            {user && (
+              <button 
+                className={`nav-tab ${currentView === 'characters' ? 'active' : ''}`}
+                onClick={() => {
+                  setCurrentView('characters');
+                  setSelectedCharacter(null);
+                  setIsCreating(false);
+                }}
+              >
+                My Characters
+              </button>
+            )}
+            <button 
+              className={`nav-tab ${currentView === 'parties' || currentView === 'party-view' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentView('parties');
+                setSelectedParty(null);
+                setIsCreatingParty(false);
+              }}
+            >
+              Parties
+            </button>
+            <button 
+              className={`nav-tab ${currentView === 'maps' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentView('maps');
+                setSelectedCharacter(null);
+                setIsCreating(false);
+              }}
+            >
+              Shared Maps
+            </button>
+          </div>
+
+          {/* Content based on current view */}
+          {currentView === 'characters' ? (
+            user ? (
+              !selectedCharacter && !isCreating ? (
+                <CharacterList
+                  characters={characters}
+                  onSelectCharacter={handleSelectCharacter}
+                  onCreateNew={handleCreateNew}
+                  onDelete={handleDelete}
+                />
+              ) : (
+                <CharacterSheet
+                  character={selectedCharacter}
+                  onSave={handleSave}
+                  onCancel={handleBackToList}
+                  onViewParty={handleViewParty}
+                />
+              )
+            ) : (
+              <div className="auth-required">
+                <h2>Authentication Required</h2>
+                <p>Please sign in to manage your characters.</p>
+                <button onClick={() => setCurrentView('auth')} className="btn-create">
+                  Sign In
+                </button>
+              </div>
+            )
+          ) : currentView === 'parties' ? (
+            !selectedParty && !isCreatingParty ? (
+              <PartyList
+                parties={parties}
+                onSelectParty={handleSelectParty}
+                onCreateNew={user ? handleCreateNewParty : () => setCurrentView('auth')}
+                onDelete={handleDeleteParty}
+                onViewParty={handleViewParty}
+                isAuthenticated={!!user}
+              />
+            ) : (
+              user ? (
+                <PartyForm
+                  party={selectedParty}
+                  onSave={handleSaveParty}
+                  onCancel={handleBackToPartyList}
+                />
+              ) : (
+                <div className="auth-required">
+                  <h2>Authentication Required</h2>
+                  <p>Please sign in to create or edit parties.</p>
+                  <button onClick={() => { setCurrentView('auth'); setIsCreatingParty(false); setSelectedParty(null); }} className="btn-create">
+                    Sign In
+                  </button>
+                  <button onClick={handleBackToPartyList} className="btn-cancel" style={{ marginLeft: '10px' }}>
+                    Back to Parties
+                  </button>
+                </div>
+              )
+            )
+          ) : currentView === 'party-view' ? (
+            <PartyView
+              partyName={selectedParty}
+              allCharacters={characters}
+              currentUser={user}
+              onBack={handleBackFromParty}
+              onSelectCharacter={user ? handleSelectCharacter : () => setCurrentView('auth')}
+            />
+          ) : currentView === 'maps' ? (
+            <Maps user={user} mapsStorage={mapsStorage} />
+          ) : null}
+        </>
       )}
     </div>
   );
