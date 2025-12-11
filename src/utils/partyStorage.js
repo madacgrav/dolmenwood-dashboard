@@ -128,8 +128,11 @@ export const partyStorage = {
 
   // Add a new party
   addParty: async (party) => {
+    // Extract only allowed fields to prevent system field overrides
+    const { name, description } = party;
     const newParty = {
-      ...party,
+      name: name || '',
+      description: description || '',
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -157,8 +160,11 @@ export const partyStorage = {
 
   // Update a party
   updateParty: async (id, updates) => {
+    // Extract only allowed fields to prevent system field overrides
+    const { name, description } = updates;
     const updatedData = {
-      ...updates,
+      ...(name !== undefined && { name }),
+      ...(description !== undefined && { description }),
       updatedAt: new Date().toISOString()
     };
     
