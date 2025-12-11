@@ -652,7 +652,7 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
                       </option>
                     ))
                   ) : (
-                    <option value="" disabled>No parties available</option>
+                    <option disabled>No parties available</option>
                   )}
                 </select>
               </div>
