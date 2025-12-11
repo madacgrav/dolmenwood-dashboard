@@ -4,34 +4,27 @@ import {
   doc, 
   setDoc, 
   deleteDoc, 
-  onSnapshot 
+  onSnapshot,
+  query,
+  orderBy 
 } from 'firebase/firestore';
-import { db, authService } from './firebase';
+import { db } from './firebase';
 
 const STORAGE_KEY = 'dolmenwood_parties';
-const COLLECTION_NAME = 'parties';
+const COLLECTION_NAME = 'shared_parties'; // Global collection, accessible to all users
 
 // Track if Firebase is available
 let firebaseAvailable = false;
-let userId = null;
 
-// Initialize storage with authenticated user
+// Initialize storage (no user-specific setup needed for shared data)
 export const initPartyStorage = async () => {
   try {
-    const user = authService.getCurrentUser();
-    if (!user) {
-      // No authenticated user, use localStorage only
+    if (!db) {
       firebaseAvailable = false;
-      userId = null;
       return false;
     }
     
-    userId = user.uid;
     firebaseAvailable = true;
-    
-    // Migrate localStorage data to Firestore on first use
-    await migrateLocalStorageToFirestore();
-    
     return true;
   } catch (error) {
     console.warn('Firebase unavailable for parties, using localStorage fallback:', error);
@@ -40,46 +33,16 @@ export const initPartyStorage = async () => {
   }
 };
 
-// Migrate existing localStorage data to Firestore
-const migrateLocalStorageToFirestore = async () => {
-  if (!firebaseAvailable || !userId) return;
-  
-  try {
-    // Check if Firestore already has data
-    const snapshot = await getDocs(collection(db, `users/${userId}/${COLLECTION_NAME}`));
-    if (!snapshot.empty) return; // Already has data, don't migrate
-    
-    // Get localStorage data
-    const localData = localStorage.getItem(STORAGE_KEY);
-    if (!localData) return;
-    
-    const parties = JSON.parse(localData);
-    
-    // Upload to Firestore
-    for (const party of parties) {
-      await setDoc(
-        doc(db, `users/${userId}/${COLLECTION_NAME}`, party.id),
-        party
-      );
-    }
-    
-    console.log('Successfully migrated', parties.length, 'parties to cloud storage');
-  } catch (error) {
-    console.error('Error migrating party data:', error);
-  }
-};
-
 export const partyStorage = {
   // Get all parties from Firestore or localStorage
   getParties: async () => {
-    if (firebaseAvailable && userId) {
+    if (firebaseAvailable) {
       try {
-        const querySnapshot = await getDocs(
-          collection(db, `users/${userId}/${COLLECTION_NAME}`)
-        );
+        const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
         const parties = [];
         querySnapshot.forEach((doc) => {
-          parties.push(doc.data());
+          parties.push({ id: doc.id, ...doc.data() });
         });
         return parties;
       } catch (error) {
@@ -98,25 +61,9 @@ export const partyStorage = {
     }
   },
 
-  // Save parties (used for initial load)
+  // Save parties (used for localStorage)
   saveParties: async (parties) => {
-    if (firebaseAvailable && userId) {
-      try {
-        // Save each party to Firestore
-        for (const party of parties) {
-          await setDoc(
-            doc(db, `users/${userId}/${COLLECTION_NAME}`, party.id),
-            party
-          );
-        }
-        return true;
-      } catch (error) {
-        console.error('Error writing parties to Firestore:', error);
-        // Fallback to localStorage
-      }
-    }
-    
-    // localStorage fallback
+    // localStorage only - Firebase uses individual documents
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parties));
       return true;
@@ -138,10 +85,10 @@ export const partyStorage = {
       updatedAt: new Date().toISOString()
     };
     
-    if (firebaseAvailable && userId) {
+    if (firebaseAvailable) {
       try {
         await setDoc(
-          doc(db, `users/${userId}/${COLLECTION_NAME}`, newParty.id),
+          doc(db, COLLECTION_NAME, newParty.id),
           newParty
         );
         return newParty;
@@ -153,7 +100,7 @@ export const partyStorage = {
     
     // localStorage fallback
     const parties = await partyStorage.getParties();
-    parties.push(newParty);
+    parties.unshift(newParty); // Add to beginning for newest first
     await partyStorage.saveParties(parties);
     return newParty;
   },
@@ -168,10 +115,10 @@ export const partyStorage = {
       updatedAt: new Date().toISOString()
     };
     
-    if (firebaseAvailable && userId) {
+    if (firebaseAvailable) {
       try {
         await setDoc(
-          doc(db, `users/${userId}/${COLLECTION_NAME}`, id),
+          doc(db, COLLECTION_NAME, id),
           updatedData,
           { merge: true }
         );
@@ -196,9 +143,9 @@ export const partyStorage = {
 
   // Delete a party
   deleteParty: async (id) => {
-    if (firebaseAvailable && userId) {
+    if (firebaseAvailable) {
       try {
-        await deleteDoc(doc(db, `users/${userId}/${COLLECTION_NAME}`, id));
+        await deleteDoc(doc(db, COLLECTION_NAME, id));
         return await partyStorage.getParties();
       } catch (error) {
         console.error('Error deleting party from Firestore:', error);
@@ -215,17 +162,18 @@ export const partyStorage = {
 
   // Subscribe to real-time updates
   subscribeToParties: (callback) => {
-    if (!firebaseAvailable || !userId) {
+    if (!firebaseAvailable) {
       return () => {}; // Return empty unsubscribe function
     }
     
     try {
+      const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
       const unsubscribe = onSnapshot(
-        collection(db, `users/${userId}/${COLLECTION_NAME}`),
+        q,
         (snapshot) => {
           const parties = [];
           snapshot.forEach((doc) => {
-            parties.push(doc.data());
+            parties.push({ id: doc.id, ...doc.data() });
           });
           callback(parties);
         },
@@ -244,11 +192,9 @@ export const partyStorage = {
   clearAll: async () => {
     localStorage.removeItem(STORAGE_KEY);
     
-    if (firebaseAvailable && userId) {
+    if (firebaseAvailable) {
       try {
-        const querySnapshot = await getDocs(
-          collection(db, `users/${userId}/${COLLECTION_NAME}`)
-        );
+        const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
         const deletePromises = [];
         querySnapshot.forEach((document) => {
           deletePromises.push(deleteDoc(document.ref));

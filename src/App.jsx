@@ -32,23 +32,32 @@ function App() {
 
     const initializeApp = async (currentUser) => {
       try {
+        // Initialize party storage (shared, available to all users)
+        const partyFirebaseReady = await initPartyStorage();
+        
+        // Initialize maps storage (shared, available to all users)
+        await initMapsStorage();
+        
         if (!currentUser) {
-          // No user logged in
+          // No user logged in - still load shared data
           setLoading(false);
           setSyncStatus('Not logged in');
           setCharacters([]);
-          setParties([]);
+          
+          // Load parties even without user login (they're shared)
+          if (partyFirebaseReady) {
+            unsubscribeParties = partyStorage.subscribeToParties((updatedParties) => {
+              setParties(updatedParties);
+            });
+          } else {
+            const storedParties = await partyStorage.getParties();
+            setParties(storedParties);
+          }
           return;
         }
 
         // Initialize Firebase storage with authenticated user
         const firebaseReady = await initStorage();
-        
-        // Initialize party storage
-        await initPartyStorage();
-        
-        // Initialize maps storage (available to all users)
-        await initMapsStorage();
         
         if (firebaseReady) {
           setSyncStatus('Cloud sync enabled');
