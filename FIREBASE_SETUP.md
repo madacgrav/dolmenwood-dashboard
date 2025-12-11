@@ -56,7 +56,7 @@ VITE_FIREBASE_APP_ID=1:123456789012:web:abc123def456
 
 ### 5. Configure Security Rules
 
-To allow users to read and write only their own data:
+To allow users to read and write only their own data, and to allow shared access to parties and maps:
 
 1. In Firestore Database, click the **"Rules"** tab
 2. Replace the default rules with:
@@ -68,6 +68,20 @@ service cloud.firestore {
     // Allow users to read and write only their own data
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow all users (even unauthenticated) to read shared parties
+    // Only authenticated users can create, update, or delete parties
+    match /shared_parties/{partyId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+    }
+    
+    // Allow all users (even unauthenticated) to read shared maps
+    // Only authenticated users can create, update, or delete maps
+    match /shared_maps/{mapId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
     }
   }
 }
@@ -136,6 +150,18 @@ If you don't mind your Firebase config being public (it's designed to be):
 7. You should see the same characters appear!
 
 ## Troubleshooting
+
+### "Missing or insufficient permissions" error
+
+This error occurs when Firestore Security Rules are not correctly configured:
+
+- **Solution:** Make sure you've published the security rules from Step 5 above
+- The rules must include permissions for:
+  - `users/{userId}` - User-specific character data
+  - `shared_parties/{partyId}` - Shared party data (readable by all, writable by authenticated users)
+  - `shared_maps/{mapId}` - Shared map data (readable by all, writable by authenticated users)
+- Check the **Firestore Rules** tab in Firebase Console to verify rules are published
+- After publishing rules, it may take a few seconds to take effect
 
 ### "Cloud sync enabled" doesn't appear
 
