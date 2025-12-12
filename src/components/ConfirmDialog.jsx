@@ -12,6 +12,8 @@ import './ConfirmDialog.css';
  * @param {string} itemName - Name of item being deleted (for typing confirmation)
  * @param {function} onConfirm - Callback when user confirms
  * @param {function} onCancel - Callback when user cancels
+ * 
+ * Note: Name comparison is case-insensitive for better usability
  */
 function ConfirmDialog({ 
   isOpen, 
@@ -51,7 +53,8 @@ function ConfirmDialog({
     setTypedName('');
   };
 
-  const isNameMatch = typedName.trim() === itemName.trim();
+  // Case-insensitive comparison for better usability
+  const isNameMatch = typedName.trim().toLowerCase() === itemName.trim().toLowerCase();
 
   return (
     <div className="confirm-dialog-overlay" onClick={handleCancel}>
@@ -71,7 +74,7 @@ function ConfirmDialog({
           ) : (
             <>
               <p className="confirm-message">
-                To confirm deletion, please type the party name exactly:
+                To confirm deletion, please type the party name (case-insensitive):
               </p>
               <div className="confirm-item-name">
                 <strong>{itemName}</strong>
