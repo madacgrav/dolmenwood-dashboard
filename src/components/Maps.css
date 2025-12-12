@@ -4,6 +4,40 @@
   position: relative;
 }
 
+/* Decorative scroll on the left */
+.maps-container::before {
+  content: '';
+  position: absolute;
+  top: 60px;
+  left: -80px;
+  width: 110px;
+  height: 150px;
+  background: url('/dolmenwood-dashboard/images/scroll.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 8s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(139, 69, 19, 0.4));
+}
+
+/* Decorative compass/dragon on the right */
+.maps-container::after {
+  content: '';
+  position: absolute;
+  top: 60px;
+  right: -80px;
+  width: 130px;
+  height: 130px;
+  background: url('/dolmenwood-dashboard/images/dragon.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 9s ease-in-out infinite reverse;
+  filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
+}
+
 .maps-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -231,6 +265,40 @@
   color: #b0b0b0;
   font-size: 1.2rem;
   font-style: italic;
+  position: relative;
+}
+
+/* Add decorative map elements around empty state */
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  width: 80px;
+  height: 80px;
+  background: url('/dolmenwood-dashboard/images/scroll.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.25;
+  transform: translateY(-50%) rotate(-20deg);
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(139, 69, 19, 0.3));
+  animation: float 7s ease-in-out infinite;
+}
+
+.empty-state::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  width: 80px;
+  height: 80px;
+  background: url('/dolmenwood-dashboard/images/dragon.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.25;
+  transform: translateY(-50%) rotate(20deg);
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+  animation: float 8s ease-in-out infinite reverse;
 }
 
 /* Map Modal */
@@ -352,5 +420,26 @@
 
   .modal-content h2 {
     font-size: 1.5rem;
+  }
+
+  /* Hide decorative elements on mobile */
+  .maps-container::before,
+  .maps-container::after {
+    display: none;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .maps-container::before {
+    left: -40px;
+    width: 80px;
+    height: 110px;
+  }
+  
+  .maps-container::after {
+    right: -40px;
+    width: 90px;
+    height: 90px;
   }
 }
