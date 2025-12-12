@@ -299,16 +299,10 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
       
       const updatedDiaryEntries = [...(formData.diaryEntries || []), entry];
       
-      setFormData(prev => ({
-        ...prev,
-        diaryEntries: updatedDiaryEntries
-      }));
-      
       // Immediately save to database if we have a character ID
       if (character?.id) {
         try {
           await storage.updateCharacter(character.id, {
-            ...formData,
             diaryEntries: updatedDiaryEntries
           });
         } catch (error) {
@@ -317,6 +311,11 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
           return;
         }
       }
+      
+      setFormData(prev => ({
+        ...prev,
+        diaryEntries: updatedDiaryEntries
+      }));
       
       // Reset form
       setNewDiaryEntry({ sessionNumber: '', content: '' });
@@ -333,23 +332,23 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
     if (window.confirm('Are you sure you want to delete this diary entry?')) {
       const updatedDiaryEntries = (formData.diaryEntries || []).filter(entry => entry.id !== entryId);
       
-      setFormData(prev => ({
-        ...prev,
-        diaryEntries: updatedDiaryEntries
-      }));
-      
       // Immediately save to database if we have a character ID
       if (character?.id) {
         try {
           await storage.updateCharacter(character.id, {
-            ...formData,
             diaryEntries: updatedDiaryEntries
           });
         } catch (error) {
           console.error('Error removing diary entry from database:', error);
           alert('Error removing diary entry. Please try again.');
+          return;
         }
       }
+      
+      setFormData(prev => ({
+        ...prev,
+        diaryEntries: updatedDiaryEntries
+      }));
     }
   };
 
