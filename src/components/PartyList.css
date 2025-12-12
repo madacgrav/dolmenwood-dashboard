@@ -4,7 +4,7 @@
   position: relative;
 }
 
-/* Decorative sword on left */
+/* Decorative scroll on left */
 .party-list-container::before {
   content: '';
   position: absolute;
@@ -36,15 +36,6 @@
   z-index: 0;
   animation: float 8s ease-in-out infinite reverse;
   filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
 }
 
 .header {
