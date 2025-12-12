@@ -1281,3 +1281,135 @@
     margin-bottom: 0.5rem;
   }
 }
+
+/* Spells & Abilities Section */
+.spell-ability-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr auto;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .spell-ability-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+.spell-ability-name-input,
+.spell-ability-type-select,
+.spell-ability-damage-input {
+  padding: 0.5rem;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.15) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  border-radius: 6px;
+  color: #f4f4f4;
+  font-size: 0.95rem;
+}
+
+.spell-ability-type-select {
+  cursor: pointer;
+  text-align: center;
+  font-weight: 600;
+}
+
+.spell-ability-name-input:focus,
+.spell-ability-type-select:focus,
+.spell-ability-damage-input:focus {
+  outline: none;
+  border-color: #d4af37;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.25) 0%, rgba(101, 67, 33, 0.25) 100%);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.btn-remove-spell-ability {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-remove-spell-ability:hover {
+  background: rgba(255, 0, 0, 0.5);
+  border-color: rgba(255, 0, 0, 0.7);
+}
+
+.btn-add-spell-ability {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
+  color: #d4af37;
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: bold;
+  width: 100%;
+}
+
+.btn-add-spell-ability:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.5) 0%, rgba(170, 137, 41, 0.5) 100%);
+  border-color: #d4af37;
+}
+
+.spells-abilities-readonly {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.spell-ability-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(101, 67, 33, 0.15) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.spell-ability-item:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.2) 0%, rgba(101, 67, 33, 0.2) 100%);
+}
+
+.spell-ability-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(170, 137, 41, 0.3) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  color: #d4af37;
+  white-space: nowrap;
+}
+
+.spell-ability-name {
+  flex: 1;
+  color: #f4f4f4;
+  font-weight: 600;
+}
+
+.spell-ability-damage {
+  color: #d4af37;
+  font-size: 0.9rem;
+  font-style: italic;
+}

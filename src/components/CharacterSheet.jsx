@@ -68,6 +68,7 @@ const emptyCharacter = {
     gold: null,
     pellucidum: null
   },
+  spellsAndAbilities: [], // Array of {name: string, type: 'spell'|'ability', damageHealing: string}
   otherNotes: '',
   diaryEntries: [] // Array of {date, sessionNumber, content, author}
 };
@@ -235,6 +236,35 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
         ...prev.coins,
         [coin]: value === '' ? null : (parseInt(value, 10) || 0)
       }
+    }));
+  };
+
+  const handleSpellAbilityChange = (index, field, value) => {
+    setFormData(prev => {
+      const newSpellsAndAbilities = [...(prev.spellsAndAbilities || [])];
+      newSpellsAndAbilities[index] = {
+        ...newSpellsAndAbilities[index],
+        [field]: value
+      };
+      return {
+        ...prev,
+        spellsAndAbilities: newSpellsAndAbilities
+      };
+    });
+  };
+
+  const handleAddSpellAbility = () => {
+    const newSpellAbility = { name: '', type: 'spell', damageHealing: '' };
+    setFormData(prev => ({
+      ...prev,
+      spellsAndAbilities: [...(prev.spellsAndAbilities || []), newSpellAbility]
+    }));
+  };
+
+  const handleRemoveSpellAbility = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      spellsAndAbilities: (prev.spellsAndAbilities || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -828,6 +858,69 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
             />
           ) : (
             <div className="readonly-textarea">{formData.kindredTraits || '—'}</div>
+          )}
+        </div>
+
+        {/* Spells & Abilities */}
+        <div className="section">
+          <h2>Spells & Abilities</h2>
+          {isEditing ? (
+            <>
+              {(formData.spellsAndAbilities || []).map((item, index) => (
+                <div key={index} className="spell-ability-row">
+                  <input
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => handleSpellAbilityChange(index, 'name', e.target.value)}
+                    placeholder="Name"
+                    className="spell-ability-name-input"
+                  />
+                  <select
+                    value={item.type}
+                    onChange={(e) => handleSpellAbilityChange(index, 'type', e.target.value)}
+                    className="spell-ability-type-select"
+                  >
+                    <option value="spell">Spell</option>
+                    <option value="ability">Ability</option>
+                  </select>
+                  <input
+                    type="text"
+                    value={item.damageHealing || ''}
+                    onChange={(e) => handleSpellAbilityChange(index, 'damageHealing', e.target.value)}
+                    placeholder="Damage/Healing"
+                    className="spell-ability-damage-input"
+                  />
+                  <button
+                    type="button"
+                    className="btn-remove-spell-ability"
+                    onClick={() => handleRemoveSpellAbility(index)}
+                    title="Remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <button type="button" className="btn-add-spell-ability" onClick={handleAddSpellAbility}>
+                + Add Spell/Ability
+              </button>
+            </>
+          ) : (
+            <div className="spells-abilities-readonly">
+              {(() => {
+                const items = formData.spellsAndAbilities || [];
+                return items.length > 0 ? (
+                  items.map((item, index) => (
+                    <div key={index} className="spell-ability-item">
+                      <span className="spell-ability-badge">{item.type === 'spell' ? '✨ Spell' : '⚔️ Ability'}</span>
+                      <span className="spell-ability-name">{item.name}</span>
+                      {item.damageHealing && <span className="spell-ability-damage">({item.damageHealing})</span>}
+                    </div>
+                  ))
+                ) : (
+                  <div className="readonly-value">—</div>
+                );
+              })()}
+            </div>
           )}
         </div>
 
