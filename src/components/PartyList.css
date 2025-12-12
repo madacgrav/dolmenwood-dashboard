@@ -4,6 +4,49 @@
   position: relative;
 }
 
+/* Decorative sword on left */
+.party-list-container::before {
+  content: '';
+  position: absolute;
+  top: 60px;
+  left: -80px;
+  width: 100px;
+  height: 140px;
+  background: url('/dolmenwood-dashboard/images/sword.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 7s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(139, 69, 19, 0.4));
+}
+
+/* Decorative dice on right */
+.party-list-container::after {
+  content: '';
+  position: absolute;
+  top: 80px;
+  right: -70px;
+  width: 90px;
+  height: 90px;
+  background: url('/dolmenwood-dashboard/images/dice-d20.svg') no-repeat center;
+  background-size: contain;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 8s ease-in-out infinite reverse;
+  filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
 .header {
   text-align: center;
   margin-bottom: 2rem;
@@ -191,5 +234,26 @@
 
   .header h1 {
     font-size: 2rem;
+  }
+
+  /* Hide decorative elements on mobile */
+  .party-list-container::before,
+  .party-list-container::after {
+    display: none;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .party-list-container::before {
+    left: -40px;
+    width: 70px;
+    height: 100px;
+  }
+  
+  .party-list-container::after {
+    right: -40px;
+    width: 60px;
+    height: 60px;
   }
 }
