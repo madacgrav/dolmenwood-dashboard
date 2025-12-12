@@ -72,6 +72,10 @@ Chivalric Code
       gold: 294,
       pellucidum: null
     },
+    spellsAndAbilities: [
+      { name: 'Mounted Charge', type: 'ability', damageHealing: '+2d6 damage' },
+      { name: 'Rally', type: 'ability', damageHealing: 'Allies +1 morale' }
+    ],
     otherNotes: `Age 21
 Height 6'
 Weight 147 lbs`
@@ -138,6 +142,12 @@ All lift 5gp`,
       gold: null,
       pellucidum: null
     },
+    spellsAndAbilities: [
+      { name: 'Turn Undead', type: 'ability', damageHealing: '2d6+level' },
+      { name: 'Lesser Healing', type: 'spell', damageHealing: '1d8+2' },
+      { name: 'Light', type: 'spell', damageHealing: 'N/A' },
+      { name: 'Shield of Protection', type: 'spell', damageHealing: '+2 AC' }
+    ],
     otherNotes: `Age 26 years
 Ht 5'6"
 Wt 149`
@@ -210,6 +220,11 @@ Knack - Wood Kenning
       gold: null,
       pellucidum: null
     },
+    spellsAndAbilities: [
+      { name: 'Tracking', type: 'ability', damageHealing: 'N/A' },
+      { name: 'Wayfinding', type: 'ability', damageHealing: '3-in-6 success' },
+      { name: 'Animal Companion', type: 'ability', damageHealing: 'Squirrel aid' }
+    ],
     otherNotes: ''
   },
   {
@@ -270,6 +285,11 @@ Knack - Wood Kenning
       gold: null,
       pellucidum: null
     },
+    spellsAndAbilities: [
+      { name: 'Bardic Performance', type: 'ability', damageHealing: 'Inspire allies' },
+      { name: 'Charm Person', type: 'spell', damageHealing: 'N/A' },
+      { name: 'Nine Lives', type: 'ability', damageHealing: 'Grimalkin trait' }
+    ],
     otherNotes: 'Ape: 990'
   }
 ];

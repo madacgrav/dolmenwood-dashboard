@@ -68,7 +68,7 @@ const emptyCharacter = {
     gold: null,
     pellucidum: null
   },
-  spellsAndAbilities: [], // Array of {name, type, damageHealing}
+  spellsAndAbilities: [], // Array of {name: string, type: 'spell'|'ability', damageHealing: string}
   otherNotes: '',
   diaryEntries: [] // Array of {date, sessionNumber, content, author}
 };
@@ -254,9 +254,10 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
   };
 
   const handleAddSpellAbility = () => {
+    const newSpellAbility = { name: '', type: 'spell', damageHealing: '' };
     setFormData(prev => ({
       ...prev,
-      spellsAndAbilities: [...(prev.spellsAndAbilities || []), { name: '', type: 'spell', damageHealing: '' }]
+      spellsAndAbilities: [...(prev.spellsAndAbilities || []), newSpellAbility]
     }));
   };
 
@@ -905,17 +906,20 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
             </>
           ) : (
             <div className="spells-abilities-readonly">
-              {(formData.spellsAndAbilities || []).length > 0 ? (
-                (formData.spellsAndAbilities || []).map((item, index) => (
-                  <div key={index} className="spell-ability-item">
-                    <span className="spell-ability-badge">{item.type === 'spell' ? '✨ Spell' : '⚔️ Ability'}</span>
-                    <span className="spell-ability-name">{item.name}</span>
-                    {item.damageHealing && <span className="spell-ability-damage">({item.damageHealing})</span>}
-                  </div>
-                ))
-              ) : (
-                <div className="readonly-value">—</div>
-              )}
+              {(() => {
+                const items = formData.spellsAndAbilities || [];
+                return items.length > 0 ? (
+                  items.map((item, index) => (
+                    <div key={index} className="spell-ability-item">
+                      <span className="spell-ability-badge">{item.type === 'spell' ? '✨ Spell' : '⚔️ Ability'}</span>
+                      <span className="spell-ability-name">{item.name}</span>
+                      {item.damageHealing && <span className="spell-ability-damage">({item.damageHealing})</span>}
+                    </div>
+                  ))
+                ) : (
+                  <div className="readonly-value">—</div>
+                );
+              })()}
             </div>
           )}
         </div>
