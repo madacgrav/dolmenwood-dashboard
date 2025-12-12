@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import { partyStorage } from '../utils/partyStorage';
+import { storage } from '../utils/storage';
 import './CharacterSheet.css';
 
 // Avatar configuration constants
@@ -285,7 +286,7 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
     setShowDiaryForm(true);
   };
 
-  const handleSaveDiaryEntry = () => {
+  const handleSaveDiaryEntry = async () => {
     if (newDiaryEntry.content.trim()) {
       const entry = {
         id: crypto.randomUUID(),
@@ -296,10 +297,26 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
         authorName: formData.name || 'Unknown'
       };
       
+      const updatedDiaryEntries = [...(formData.diaryEntries || []), entry];
+      
       setFormData(prev => ({
         ...prev,
-        diaryEntries: [...(prev.diaryEntries || []), entry]
+        diaryEntries: updatedDiaryEntries
       }));
+      
+      // Immediately save to database if we have a character ID
+      if (character?.id) {
+        try {
+          await storage.updateCharacter(character.id, {
+            ...formData,
+            diaryEntries: updatedDiaryEntries
+          });
+        } catch (error) {
+          console.error('Error saving diary entry to database:', error);
+          alert('Error saving diary entry. Please try again.');
+          return;
+        }
+      }
       
       // Reset form
       setNewDiaryEntry({ sessionNumber: '', content: '' });
@@ -312,12 +329,27 @@ function CharacterSheet({ character, onSave, onCancel, onViewParty }) {
     setShowDiaryForm(false);
   };
 
-  const handleRemoveDiaryEntry = (entryId) => {
+  const handleRemoveDiaryEntry = async (entryId) => {
     if (window.confirm('Are you sure you want to delete this diary entry?')) {
+      const updatedDiaryEntries = (formData.diaryEntries || []).filter(entry => entry.id !== entryId);
+      
       setFormData(prev => ({
         ...prev,
-        diaryEntries: (prev.diaryEntries || []).filter(entry => entry.id !== entryId)
+        diaryEntries: updatedDiaryEntries
       }));
+      
+      // Immediately save to database if we have a character ID
+      if (character?.id) {
+        try {
+          await storage.updateCharacter(character.id, {
+            ...formData,
+            diaryEntries: updatedDiaryEntries
+          });
+        } catch (error) {
+          console.error('Error removing diary entry from database:', error);
+          alert('Error removing diary entry. Please try again.');
+        }
+      }
     }
   };
 
