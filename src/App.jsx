@@ -7,10 +7,11 @@ import PartyView from './components/PartyView';
 import PartyList from './components/PartyList';
 import PartyForm from './components/PartyForm';
 import HealthCheckIndicator from './components/HealthCheckIndicator';
+import ConfirmDialog from './components/ConfirmDialog';
 import { storage, initStorage } from './utils/storage';
 import { mapsStorage, initMapsStorage } from './utils/mapsStorage';
 import { partyStorage, initPartyStorage } from './utils/partyStorage';
-import { initPartyMemberStorage } from './utils/partyMemberStorage';
+import { partyMemberStorage, initPartyMemberStorage } from './utils/partyMemberStorage';
 import { authService } from './utils/firebase';
 import './App.css';
 
@@ -26,6 +27,12 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState('Connecting...');
   const [error, setError] = useState('');
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({
+    isOpen: false,
+    partyId: null,
+    partyName: '',
+    memberCount: 0
+  });
 
   useEffect(() => {
     let unsubscribeCharacters = null;
@@ -260,21 +267,69 @@ function App() {
   };
 
   const handleDeleteParty = async (id) => {
-    if (window.confirm('Are you sure you want to delete this party? This will not delete the characters in the party.')) {
-      try {
-        await partyStorage.deleteParty(id);
-        if (syncStatus === 'Offline mode') {
-          const updated = await partyStorage.getParties();
-          setParties(updated);
-        }
-        if (selectedParty?.id === id) {
-          handleBackToPartyList();
-        }
-      } catch (error) {
-        console.error('Error deleting party:', error);
-        alert('Error deleting party. Please try again.');
-      }
+    // Only authenticated users can delete parties
+    if (!user) {
+      alert('Please sign in to delete parties.');
+      return;
     }
+
+    // Find the party to get its name and check for members
+    const party = parties.find(p => p.id === id);
+    if (!party) {
+      alert('Party not found.');
+      return;
+    }
+
+    try {
+      // Check if party has any members
+      const members = await partyMemberStorage.getPartyMembers(party.name);
+      
+      // Open the enhanced confirmation dialog
+      setDeleteConfirmDialog({
+        isOpen: true,
+        partyId: id,
+        partyName: party.name,
+        memberCount: members.length
+      });
+    } catch (error) {
+      console.error('Error checking party members:', error);
+      alert('Error loading party information. Please try again.');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    const { partyId } = deleteConfirmDialog;
+    
+    try {
+      await partyStorage.deleteParty(partyId);
+      if (syncStatus === 'Offline mode') {
+        const updated = await partyStorage.getParties();
+        setParties(updated);
+      }
+      if (selectedParty?.id === partyId) {
+        handleBackToPartyList();
+      }
+      
+      // Close the dialog
+      setDeleteConfirmDialog({
+        isOpen: false,
+        partyId: null,
+        partyName: '',
+        memberCount: 0
+      });
+    } catch (error) {
+      console.error('Error deleting party:', error);
+      alert('Error deleting party. Please try again.');
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmDialog({
+      isOpen: false,
+      partyId: null,
+      partyName: '',
+      memberCount: 0
+    });
   };
 
   if (loading) {
@@ -309,6 +364,21 @@ function App() {
         )}
         <HealthCheckIndicator />
       </div>
+
+      {/* Enhanced confirmation dialog for party deletion */}
+      <ConfirmDialog
+        isOpen={deleteConfirmDialog.isOpen}
+        title="Delete Party"
+        message={
+          deleteConfirmDialog.memberCount > 0
+            ? `This party currently has ${deleteConfirmDialog.memberCount} member${deleteConfirmDialog.memberCount !== 1 ? 's' : ''}. Deleting the party will remove it from the list, but will not delete the characters themselves. Characters will remain in your character list.`
+            : 'Are you sure you want to delete this party? This action cannot be undone.'
+        }
+        confirmText="Delete Party"
+        itemName={deleteConfirmDialog.partyName}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
       
       {/* Show auth form if user wants to sign in */}
       {!user && currentView === 'auth' ? (
