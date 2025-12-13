@@ -26,6 +26,9 @@ Frontend (React) → Backend Proxy (Express) → GitHub Copilot API
 
 - Node.js 14+ and npm
 - GitHub Personal Access Token with Copilot scope
+- Access to GitHub Copilot API (verify endpoint and model availability with GitHub documentation)
+
+**Important Note**: The GitHub Copilot API endpoint and model parameters used in this implementation should be verified against the official GitHub Copilot API documentation. The endpoint structure and available models may vary based on your GitHub Copilot subscription level and API version.
 
 ## Installation
 
@@ -59,8 +62,12 @@ CORS_ORIGIN=http://localhost:3000
 # Required scopes: copilot
 GITHUB_TOKEN=your-github-personal-access-token-here
 
-# Copilot agent name
+# Copilot agent name (default: dolmenwood)
 COPILOT_AGENT_NAME=dolmenwood
+
+# Copilot model (optional, default: gpt-4)
+# Verify available models with GitHub Copilot API documentation
+COPILOT_MODEL=gpt-4
 
 # Node environment
 NODE_ENV=development

@@ -44,8 +44,15 @@ function AskQuestion({ user }) {
           });
 
           if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to get response from server');
+            let errorMessage = 'Failed to get response from server';
+            try {
+              const errorData = await response.json();
+              errorMessage = errorData.message || errorMessage;
+            } catch (parseError) {
+              // If JSON parsing fails, use default message
+              console.error('Failed to parse error response:', parseError);
+            }
+            throw new Error(errorMessage);
           }
 
           const data = await response.json();

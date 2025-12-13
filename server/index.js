@@ -70,7 +70,19 @@ app.post('/api/copilot/ask', async (req, res) => {
 
     const agentName = process.env.COPILOT_AGENT_NAME || 'dolmenwood';
 
+    // Validate agent name against whitelist to prevent prompt injection
+    const allowedAgents = ['dolmenwood'];
+    if (!allowedAgents.includes(agentName)) {
+      console.error(`Invalid agent name: ${agentName}`);
+      return res.status(500).json({
+        error: 'Configuration Error',
+        message: 'Invalid agent configuration'
+      });
+    }
+
     // Call GitHub Copilot API
+    // Note: This endpoint structure should be verified against the official GitHub Copilot API documentation
+    // The exact endpoint and parameters may vary based on your GitHub Copilot subscription and API version
     const githubResponse = await fetch('https://api.github.com/copilot/chat/completions', {
       method: 'POST',
       headers: {
@@ -90,20 +102,27 @@ app.post('/api/copilot/ask', async (req, res) => {
             content: question
           }
         ],
-        model: 'gpt-4',
+        // Note: Model parameter may need adjustment based on GitHub Copilot API specifications
+        // Check GitHub Copilot API documentation for available models
+        model: process.env.COPILOT_MODEL || 'gpt-4',
         temperature: 0.7,
         max_tokens: 1000
       })
     });
 
     if (!githubResponse.ok) {
-      const errorData = await githubResponse.text();
-      console.error('GitHub API error:', githubResponse.status, errorData);
+      const errorStatus = githubResponse.status;
+      // Log error status without exposing full response in production
+      if (process.env.NODE_ENV === 'development') {
+        const errorData = await githubResponse.text();
+        console.error('GitHub API error:', errorStatus, errorData);
+      } else {
+        console.error('GitHub API error:', errorStatus);
+      }
       
       return res.status(githubResponse.status).json({
         error: 'GitHub API Error',
-        message: 'Failed to get response from GitHub Copilot',
-        details: process.env.NODE_ENV === 'development' ? errorData : undefined
+        message: 'Failed to get response from GitHub Copilot'
       });
     }
 
