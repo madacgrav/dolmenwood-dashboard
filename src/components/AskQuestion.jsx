@@ -45,6 +45,9 @@ function AskQuestion({ user }) {
         { type: 'answer', text: mockResponse, timestamp: new Date().toISOString() }
       ]);
       
+      // Clear the question input for next question
+      setQuestion('');
+      
     } catch (err) {
       console.error('Error asking question:', err);
       setError('Failed to get an answer. Please try again.');
@@ -160,17 +163,32 @@ function AskQuestion({ user }) {
         <div className="conversation-history">
           <h2 className="history-title">Conversation History</h2>
           <div className="history-list">
-            {conversationHistory.map((item, index) => (
+            {conversationHistory.map((item, index) => {
+              // Safe date formatting with fallback
+              let timeStr = '';
+              try {
+                const date = new Date(item.timestamp);
+                if (!isNaN(date.getTime())) {
+                  timeStr = date.toLocaleTimeString();
+                } else {
+                  timeStr = 'Invalid time';
+                }
+              } catch (e) {
+                timeStr = 'Invalid time';
+              }
+              
+              return (
               <div key={index} className={`history-item ${item.type}`}>
                 <div className="history-timestamp">
-                  {new Date(item.timestamp).toLocaleTimeString()}
+                  {timeStr}
                 </div>
                 <div className="history-text">
                   {item.type === 'question' ? '❓ ' : '💡 '}
                   {item.text}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
