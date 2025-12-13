@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CharacterList from './components/CharacterList';
 import CharacterSheet from './components/CharacterSheet';
 import Maps from './components/Maps';
+import AskQuestion from './components/AskQuestion';
 import AuthForm from './components/AuthForm';
 import PartyView from './components/PartyView';
 import PartyList from './components/PartyList';
@@ -23,7 +24,7 @@ function App() {
   const [selectedParty, setSelectedParty] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isCreatingParty, setIsCreatingParty] = useState(false);
-  const [currentView, setCurrentView] = useState('parties'); // 'characters', 'maps', 'parties', 'party-view', or 'auth'
+  const [currentView, setCurrentView] = useState('parties'); // 'characters', 'maps', 'parties', 'party-view', 'ask-question', or 'auth'
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState('Connecting...');
   const [error, setError] = useState('');
@@ -434,6 +435,16 @@ function App() {
             >
               Shared Maps
             </button>
+            <button 
+              className={`nav-tab ${currentView === 'ask-question' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentView('ask-question');
+                setSelectedCharacter(null);
+                setIsCreating(false);
+              }}
+            >
+              Ask a Question
+            </button>
           </div>
 
           {/* Content based on current view */}
@@ -503,6 +514,8 @@ function App() {
             />
           ) : currentView === 'maps' ? (
             <Maps user={user} mapsStorage={mapsStorage} />
+          ) : currentView === 'ask-question' ? (
+            <AskQuestion user={user} />
           ) : null}
         </>
       )}

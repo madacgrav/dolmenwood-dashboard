@@ -11,6 +11,9 @@ A mobile-optimized web application for managing character sheets for the Dolmenw
 - ☁️ **Cloud Sync** (Optional): Characters sync across all your devices in real-time via Firebase
 - 💾 **Offline Support**: Works without internet using localStorage fallback
 - 🎨 **Beautiful UI**: Dark fantasy theme matching Dolmenwood aesthetics
+- 🔮 **Ask a Question**: Interactive Q&A interface for Dolmenwood game questions
+- 🗺️ **Shared Maps**: Upload and share campaign maps with all players
+- 👥 **Party Management**: Create and manage adventuring parties
 - 📋 **Complete Character Sheet**: All stats from the official character sheet including:
   - Basic Info (Name, Kindred & Class, Background, Alignment, etc.)
   - Ability Scores (Strength, Intelligence, Wisdom, Dexterity, Constitution, Charisma)
@@ -81,6 +84,30 @@ The application will be available at `http://localhost:3000`
 - Click **Save Character** to save changes
 - Click **Back to List** or **Cancel** to return without saving
 
+### Ask a Question
+
+- Navigate to the **Ask a Question** tab
+- Enter your question about Dolmenwood (characters, classes, kindred, rules, lore)
+- Click **Ask Question** to get an answer
+- View conversation history to see previous questions and answers
+- Clear history when you want to start fresh
+
+**Note:** The current implementation provides demonstration responses. For production use with the GitHub Copilot custom agent "dolmenwood", a secure backend API proxy would be required.
+
+### Parties
+
+- Create adventuring parties to group characters together
+- Add members to parties from your character list
+- View party composition and stats
+- Parties are shared with all users for collaborative campaigns
+
+### Shared Maps
+
+- Upload maps for your Dolmenwood campaign
+- Share maps with all players
+- Maps are automatically resized and optimized
+- Click on any map to view full size
+
 ### Data Persistence
 
 - **With Firebase**: Characters are stored in the cloud and synced across all your devices when signed in to the same account. Each user has their own private character list.
@@ -96,6 +123,7 @@ To backup your data:
 
 - **React 19** - UI framework
 - **Vite** - Build tool and dev server
+- **Firebase** - Optional cloud sync and authentication
 - **CSS3** - Responsive styling with mobile-first approach
 - **localStorage API** - Client-side data persistence
 
@@ -108,11 +136,20 @@ dolmenwood-dashboard/
 │   │   ├── CharacterList.jsx      # Main dashboard view
 │   │   ├── CharacterList.css
 │   │   ├── CharacterSheet.jsx     # Character detail/edit form
-│   │   └── CharacterSheet.css
+│   │   ├── CharacterSheet.css
+│   │   ├── AskQuestion.jsx        # Q&A interface for game questions
+│   │   ├── AskQuestion.css
+│   │   ├── PartyList.jsx          # Party management dashboard
+│   │   ├── PartyView.jsx          # Party detail view
+│   │   ├── Maps.jsx               # Shared maps gallery
+│   │   └── AuthForm.jsx           # Authentication form
 │   ├── data/
-│   │   └── exampleCharacters.js   # Example characters from the PDFs (not auto-loaded)
+│   │   └── exampleCharacters.js   # Example characters from the PDFs
 │   ├── utils/
-│   │   └── storage.js             # localStorage utility functions
+│   │   ├── storage.js             # Character storage utilities
+│   │   ├── partyStorage.js        # Party storage utilities
+│   │   ├── mapsStorage.js         # Maps storage utilities
+│   │   └── firebase.js            # Firebase configuration
 │   ├── App.jsx                    # Main app component
 │   ├── App.css                    # Global styles
 │   └── main.jsx                   # Application entry point
