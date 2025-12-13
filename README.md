@@ -92,7 +92,13 @@ The application will be available at `http://localhost:3000`
 - View conversation history to see previous questions and answers
 - Clear history when you want to start fresh
 
-**Note:** The current implementation provides demonstration responses. For production use with the GitHub Copilot custom agent "dolmenwood", a secure backend API proxy would be required.
+**Backend Setup:** To enable real GitHub Copilot AI responses (optional):
+1. See **[server/README.md](./server/README.md)** for detailed backend setup instructions
+2. Configure your GitHub Personal Access Token
+3. Start the backend server: `npm run server`
+4. The app will automatically use AI responses when backend is configured
+
+**Without Backend:** The app works with demonstration responses using built-in knowledge.
 
 ### Parties
 

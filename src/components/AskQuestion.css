@@ -369,6 +369,27 @@
   color: #d4af37;
 }
 
+.info-panel code {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #4ec9b0;
+  font-size: 0.9em;
+}
+
+.status-connected {
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.status-demo {
+  color: #ff9800;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .ask-question-header h1 {
