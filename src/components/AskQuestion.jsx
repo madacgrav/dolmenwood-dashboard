@@ -27,22 +27,47 @@ function AskQuestion({ user }) {
         { type: 'question', text: question, timestamp: new Date().toISOString() }
       ];
 
-      // For now, we'll provide a placeholder response
-      // In a production environment, this would call the GitHub Copilot API
-      // via a secure backend proxy to avoid exposing API keys
+      let responseText;
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Check if backend API proxy is configured
+      const proxyUrl = import.meta.env.VITE_GITHUB_API_PROXY_URL;
       
-      // Placeholder response - in production, replace with actual API call
-      const mockResponse = generateMockResponse(question);
+      if (proxyUrl) {
+        // Use the secure backend proxy to call GitHub Copilot API
+        try {
+          const response = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to get response from server');
+          }
+
+          const data = await response.json();
+          responseText = data.answer;
+        } catch (apiError) {
+          console.error('API Error:', apiError);
+          // Fall back to mock response if API fails
+          responseText = generateMockResponse(question);
+          setError('Connected to demo mode. Configure backend to use real AI responses.');
+        }
+      } else {
+        // No proxy configured - use mock response
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        responseText = generateMockResponse(question);
+      }
       
-      setAnswer(mockResponse);
+      setAnswer(responseText);
       
       // Add answer to conversation history
       setConversationHistory([
         ...newConversation,
-        { type: 'answer', text: mockResponse, timestamp: new Date().toISOString() }
+        { type: 'answer', text: responseText, timestamp: new Date().toISOString() }
       ]);
       
       // Clear the question input for next question
@@ -196,18 +221,26 @@ function AskQuestion({ user }) {
       <div className="info-panel">
         <h3>About This Feature</h3>
         <p>
-          This interface is designed to connect with the GitHub Copilot custom agent 
-          "dolmenwood" to answer questions about the Dolmenwood tabletop RPG.
+          This interface connects to a secure backend API proxy that handles GitHub 
+          Copilot authentication to answer questions about the Dolmenwood tabletop RPG.
         </p>
         <p className="note">
-          <strong>Note:</strong> The current implementation uses demonstration responses. 
-          In a production environment, this would require:
+          <strong>Setup Instructions:</strong>
         </p>
         <ul>
-          <li>A secure backend API proxy to handle GitHub authentication</li>
-          <li>GitHub Copilot API credentials</li>
-          <li>Integration with the custom "dolmenwood" agent</li>
+          <li>Install backend dependencies: <code>npm install</code></li>
+          <li>Configure environment variables in <code>.env</code> file (see <code>.env.example</code>)</li>
+          <li>Set your GitHub Personal Access Token with Copilot scope</li>
+          <li>Start the backend server: <code>npm run server</code></li>
+          <li>Start the frontend: <code>npm run dev</code></li>
         </ul>
+        <p>
+          {import.meta.env.VITE_GITHUB_API_PROXY_URL ? (
+            <span className="status-connected">✓ Backend API configured</span>
+          ) : (
+            <span className="status-demo">⚠ Running in demo mode - configure backend for real AI responses</span>
+          )}
+        </p>
         <p>
           For detailed rules and lore, please refer to the Dolmenwood Player's Book 
           PDF included in this repository.
